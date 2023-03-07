@@ -38,6 +38,24 @@ static int cmd_q(char *args) {
 
 static int cmd_help(char *args);
 
+static int cmd_si(char *args) {
+    int num = 0;
+    if (args == NULL) 
+	num = 1;
+    else 
+    	sscanf (args,"%d",&num);
+    cpu_exec(num);
+    return 0;
+}
+
+static int cmd_info(char *args) {
+	// TODO:
+}
+
+static int cmd_x(char *args) {
+	// TODO:
+}
+
 static struct {
   char *name;
   char *description;
@@ -48,6 +66,9 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
+  { "si", "Step into implementation of N instructions after the suspension of execution.When N is notgiven,the default is 1.", cmd_si },
+  { "info", "r for print register state\nw for print watchpoint information", cmd_info},
+  { "x", "Calculate the value of the expression and regard the result as the starting memory address.", cmd_x},
 
 };
 
