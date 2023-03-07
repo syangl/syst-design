@@ -60,13 +60,31 @@ static int cmd_info(char *args) {
 		// TODO:
 	}
 	else { 
+		printf("Invalid Args!");
 		assert (0);
 	}
 	return 0;
 }
 
 static int cmd_x(char *args) {
-	// TODO:
+	if (args == NULL) {
+		printf("Invalid Args!\n");
+		return 0;
+	}
+	char* tokens = strtok(args, " ");
+	int N, exprs;
+	sscanf(tokens, "%d", &N);
+	char* eps = tokens + strlen(tokens) + 1;
+	bool flag = true;
+	exprs = expr(eps, &flag);
+	if(!flag) {
+		printf("Invalid !\n");
+		return 0;
+	}
+	for (int i = 0; i < N; i++) {
+		printf("0x%08x\t0x%08x\n", exprs + i * 4, vaddr_read(exprs + i * 4, 4));
+	}
+	return 0;
 }
 
 static struct {
