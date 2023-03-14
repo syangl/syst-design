@@ -6,8 +6,10 @@
 #include <sys/types.h>
 #include <regex.h>
 
+bool* flag;
+
 enum {
-  TK_NOTYPE = 256, TK_EQ
+  TK_NOTYPE = 256, TK_EQ, TK_NEQ, TK_NUMBER, TK_HEXNUMBER, TK_REGISTER, TK_AND, TK_OR, TK_NOT, TK_SUB, TK_POINTER,
 
   /* TODO: Add more token types */
 
@@ -25,6 +27,18 @@ static struct rule {
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
   {"==", TK_EQ}         // equal
+  {"!=", TK_NEQ},
+  {"!", TK_NOT},
+  {"&&", TK_AND},
+  {"\\|\\|", TK_OR},
+  {"\\$[a-zA-z]+", TK_REGISTER},		// register
+  {"\\b0[xX][0-9a-fA-F]+\\b", TK_HEXNUMBER}, // hexnumber
+  {"\\b[0-9]+\\b", TK_NUMBER},				// number
+  {"-", '-'},						// sub
+  {"\\*", '*'},					// multiply
+  {"/", '/'},						// divide
+  {"\\(", '('},					// left bracket
+  {"\\)", ')'},					// right bracket
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
@@ -80,15 +94,30 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-          default: TODO();
-        }
-
+        	case NOTYPE: break;
+			default: {
+				tokens[nr_token].type = rules[i].token_type;				
+				if (rules[i].token_type == REGISTER) { //Register
+					char* reg_start = e + (position - substr_len) + 1;
+					strncpy(tokens[nr_token].str, reg_start, substr_len - 1);
+					int t;
+					for (t = 0; t <= strlen(tokens[nr_token].str); t++) { // tolower
+						int x = tokens[nr_token].str[t];
+						if (x >= 'A' && x <= 'Z') x += ('a' - 'A');
+						tokens[nr_token].str[t] = (char)x;
+					}
+				} else
+					strncpy(tokens[nr_token].str, substr_start, substr_len);
+				tokens[nr_token].str[substr_len] = '\0';
+				++nr_token;
+			}
+		}
         break;
       }
     }
 
     if (i == NR_REGEX) {
-      printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
+      printf("Position not matched%d\n%s\n%*.s^\n", position, e, position, "");
       return false;
     }
   }
@@ -96,14 +125,238 @@ static bool make_token(char *e) {
   return true;
 }
 
+int dominant_operator(int p, int q) {
+		if (*flag == false) return 0;
+		int i;
+		int pos = p;
+		int pri = 0;
+		int b_num = 0;
+		for (i = q; i >= p; i--) {
+			if (tokens[i].type == ')') b_num++;
+			if (tokens[i].type == '(') b_num--;
+			if (b_num != 0) continue;
+			switch (tokens[i].type) {
+				case '+': {  
+					if (pri < 4) pos = i, pri = 4;
+					break;
+				}
+				case '-': {  
+					if (pri < 4) pos = i, pri = 4;
+					break;
+				}
+				case '*': {  
+					if (pri < 3) pos = i, pri = 3;
+					break;
+				}
+				case '/': {  
+					if (pri < 3) pos = i, pri = 3;
+					break;
+				}
+				case TK_NOT: {  
+					if (pri < 2) pos = i, pri = 2;
+					break;
+				}
+				case TK_EQ: {  
+					if (pri < 7) pos = i, pri = 7;
+					break;
+				}
+				case TK_NEQ: {  
+					if (pri < 7) pos = i, pri = 7;
+					break;
+				}
+				case TK_AND: {  
+					if (pri < 11) pos = i, pri = 11;
+					break;
+				}
+				case TK_OR: {  
+				if (pri < 12) pos = i, pri = 12;
+				break;
+				}
+				case TK_SUB: {  
+					if (pri < 2) pos = i, pri = 2;
+					break;
+				}
+				case TK_POINTER: {  
+					if (pri < 2) pos = i, pri = 2;
+					break;
+				}
+				default: break;
+			}
+		}
+
+		if (pri == 0) {
+			*flag = false; 
+			return 0;
+		}
+		if (pri == 2) {
+			pri = 0;
+			for (i = p; i <= q; i++) {
+				if (tokens[i].type == '(') b_num++;
+				if (tokens[i].type == ')') b_num--;
+				if (b_num != 0) continue;
+				switch (tokens[i].type) {
+					case TK_SUB: {  
+						if (pri < 2) pos = i, pri = 2;
+						break;
+					}
+					case TK_NOT: {  
+						if (pri < 2) pos = i, pri = 2;
+						break;
+					}
+					case TK_POINTER: {  
+						if (pri < 2) pos = i, pri = 2;
+						break;
+					}
+				}			
+			}
+		}
+		return pos;
+}
+
+bool check_bracket(int p, int q) {
+	if (tokens[p].type != '(' || tokens[q].type != ')') return false;
+	int b_num = 0;
+	for (int i = p; i <= q; i++) {
+		if (tokens[i].type == '(') b_num++;
+		if (tokens[i].type == ')') b_num--;
+		if (b_num == 0 && i != q) return false;
+	}
+	if (b_num == 0) return true;
+	return false;
+}
+
+uint32_t eval(int p, int q) {
+	if (*flag == false) return 0;
+	if (p > q) {
+		*flag = false;
+		return 0;
+	}
+	if (p == q) {
+		uint32_t num = 0;
+		if (tokens[p].type == TK_NUMBER) {
+			sscanf(tokens[p].str, "%d", &num);
+		} 
+		else if (tokens[p].type == TK_HEXNUMBER) {
+			sscanf(tokens[p].str, "%x", &num);
+		} 
+		else if (tokens[p].type == TK_REGISTER) {
+			if (strlen(tokens[p].str) == 3) {
+				int i;
+				for (i = R_EAX; i <= R_EDI ; i ++) {
+					if (strcmp(tokens[p].str, regsl[i]) == 0) {
+						break;
+																																						}
+				}
+				if (i > R_EDI) {
+					if (strcmp(tokens[p].str, "eip") == 0){
+						num = cpu.eip;
+					}
+					else {
+						*flag = false; 
+						return 0;
+					}
+				} 
+				else return num = reg_l(i);
+				
+			}
+			else if (strlen(tokens[p].str) == 2) {
+				int i;
+				for (i = R_AX; i <= R_DI; i ++) {
+					if (strcmp(tokens[p].str, regsw[i]) == 0) {
+						break;
+					}
+				}	
+				if (i <= R_DI) return num = reg_w(i);
+				for (i = R_AL; i <= R_BH; i ++) {
+					if (strcmp(tokens[p].str, regsb[i]) == 0) {
+						break;
+					}
+				}
+				if (i <= R_BH) return num = reg_b(i);
+				*flag = false; 
+				return 0;
+			}
+			else {
+				*flag = false; 
+				return 0;
+			}
+		} 
+		else {*flag = false; return 0;}
+		return num;
+	}
+	uint32_t ans = 0;
+	if (check_bracket(p, q)) return eval(p + 1, q - 1);
+	else {
+		int pos = dominant_operator(p, q);
+		if (p == pos || tokens[pos].type == TK_NOT || tokens[pos].type == TK_SUB || tokens[pos].type == TK_POINTER) {
+			uint32_t q_ans = eval(pos + 1, q);
+			switch (tokens[pos].type) {
+				case TK_POINTER: return vaddr_read(q_ans, 4);
+				case TK_NOT: return !q_ans;
+				case TK_SUB: return -q_ans;
+				default: {
+					*flag = false; 
+					return 0;
+				}
+			}
+		}
+		uint32_t p_ans = eval(p, pos - 1), q_ans =  eval(pos + 1, q);
+		switch (tokens[pos].type) {
+			case '+': ans = p_ans + q_ans; break;
+			case '-': ans = p_ans - q_ans; break;
+			case '*': ans = p_ans * q_ans; break;
+			case '/': 
+				if (q_ans == 0) {
+					*flag = false; 
+					return 0;
+				}
+				else 
+					ans = p_ans / q_ans; 
+				break;
+			case TK_EQ : ans = p_ans == q_ans; break;
+			case TK_NEQ: ans = p_ans != q_ans; break;
+			case TK_AND: ans = p_ans && q_ans; break;
+			case TK_OR : ans = p_ans && q_ans; break;
+			default: {
+				*flag = false; 
+				return 0;
+			}
+		}
+	}
+	return ans;
+}
+
+
+
 uint32_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
     return 0;
   }
-
-  /* TODO: Insert codes to evaluate the expression. */
-  TODO();
-
-  return 0;
+	/* TODO: Insert codes to evaluate the expression. */
+  	flag = success;
+	int i, brack = 0;
+	for (i = 0; i < nr_token ; i++) {
+		if (tokens[i].type == '(') brack ++;
+		if (tokens[i].type == ')') brack --;
+		if (brack < 0) {
+			*success = false;
+			return 0;
+		}
+		
+		if (tokens[i].type == '-' && (i == 0 || (tokens[i - 1].type != ')' && tokens[i - 1].type != NUMBER && tokens[i - 1].type != HEXNUMBER && tokens[i - 1].type != REGISTER))) {
+			tokens[i].type = MINUS;
+		}
+								
+		if (tokens[i].type == '*' && (i == 0 || (tokens[i - 1].type != ')' && tokens[i - 1].type != NUMBER && tokens[i - 1].type != HEXNUMBER && tokens[i - 1].type != REGISTER))) {
+			tokens[i].type = POINTER;
+		}
+	}
+	
+	*success = true;
+	return eval(0, nr_token - 1);
 }
+
+
+
+
