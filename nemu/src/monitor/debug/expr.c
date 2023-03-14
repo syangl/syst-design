@@ -97,11 +97,11 @@ static bool make_token(char *e) {
         	case NOTYPE: break;
 			default: {
 				tokens[nr_token].type = rules[i].token_type;				
-				if (rules[i].token_type == REGISTER) { //Register
+				if (rules[i].token_type == TK_REGISTER) { // Register
 					char* reg_start = e + (position - substr_len) + 1;
 					strncpy(tokens[nr_token].str, reg_start, substr_len - 1);
 					int t;
-					for (t = 0; t <= strlen(tokens[nr_token].str); t++) { // tolower
+					for (t = 0; t <= strlen(tokens[nr_token].str); t++) { 
 						int x = tokens[nr_token].str[t];
 						if (x >= 'A' && x <= 'Z') x += ('a' - 'A');
 						tokens[nr_token].str[t] = (char)x;
@@ -335,21 +335,22 @@ uint32_t expr(char *e, bool *success) {
   }
 	/* TODO: Insert codes to evaluate the expression. */
   	flag = success;
-	int i, brack = 0;
+	int i;
+	int brack = 0;
 	for (i = 0; i < nr_token ; i++) {
-		if (tokens[i].type == '(') brack ++;
-		if (tokens[i].type == ')') brack --;
+		if (tokens[i].type == '(') brack++;
+		if (tokens[i].type == ')') brack--;
 		if (brack < 0) {
 			*success = false;
 			return 0;
 		}
 		
-		if (tokens[i].type == '-' && (i == 0 || (tokens[i - 1].type != ')' && tokens[i - 1].type != NUMBER && tokens[i - 1].type != HEXNUMBER && tokens[i - 1].type != REGISTER))) {
-			tokens[i].type = MINUS;
+		if (tokens[i].type == '-' && (i == 0 || (tokens[i - 1].type != ')' && tokens[i - 1].type != TK_NUMBER && tokens[i - 1].type != TK_HEXNUMBER && tokens[i - 1].type != TK_REGISTER))) {
+			tokens[i].type = TK_SUB;
 		}
 								
-		if (tokens[i].type == '*' && (i == 0 || (tokens[i - 1].type != ')' && tokens[i - 1].type != NUMBER && tokens[i - 1].type != HEXNUMBER && tokens[i - 1].type != REGISTER))) {
-			tokens[i].type = POINTER;
+		if (tokens[i].type == '*' && (i == 0 || (tokens[i - 1].type != ')' && tokens[i - 1].type != TK_NUMBER && tokens[i - 1].type != TK_HEXNUMBER && tokens[i - 1].type != TK_REGISTER))) {
+			tokens[i].type = TK_POINTER;
 		}
 	}
 	
