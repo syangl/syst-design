@@ -22,17 +22,17 @@ void init_wp_pool() {
 
 WP* new_wp() {
 	if (free_ == NULL) return NULL;
-	WP *f_top, *h_tail;
-	f_top = free_; // get one free node
-	h_tail = head; // h_tail is the first in used nodes
+	WP *free_head, *head_tail;
+	free_head = free_; // get one free node
+	head_tail = head; // head_tail is the first in used nodes
 	free_ = free_ -> next;
-	f_top -> next = NULL;
-	if (h_tail == NULL) head = f_top;
+	free_head -> next = NULL;
+	if (head_tail == NULL) head = free_head;
 	else {
-		while (h_tail -> next != NULL){
-			h_tail = h_tail -> next;
+		while (head_tail -> next != NULL){
+			head_tail = head_tail -> next;
 		}
-		h_tail -> next = f_top; // link f_top on used nodes linklist as tail
+		head_tail -> next = free_head; // link free_head on used nodes linklist as tail
 	}
-	return f_top;
+	return free_head;
 }

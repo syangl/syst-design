@@ -26,7 +26,7 @@ static struct rule {
 
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
-  {"==", TK_EQ}         // equal
+  {"==", TK_EQ},         // equal
   {"!=", TK_NEQ},
   {"!", TK_NOT},
   {"&&", TK_AND},
@@ -94,7 +94,7 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-        	case NOTYPE: break;
+        	case TK_NOTYPE: break;
 			default: {
 				tokens[nr_token].type = rules[i].token_type;				
 				if (rules[i].token_type == TK_REGISTER) { // Register
