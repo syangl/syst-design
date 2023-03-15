@@ -129,7 +129,7 @@ int dominant_operator(int p, int q) {
 		if (*flag == false) return 0;
 		int i;
 		int pos = p;
-		int pri = 0;
+		int op_level = 0;
 		int b_num = 0;
 		for (i = q; i >= p; i--) {
 			if (tokens[i].type == ')') b_num++;
@@ -137,74 +137,116 @@ int dominant_operator(int p, int q) {
 			if (b_num != 0) continue;
 			switch (tokens[i].type) {
 				case '+': {  
-					if (pri < 4) pos = i, pri = 4;
+					if (op_level < 4) {
+						pos = i;
+						op_level = 4;
+					}
 					break;
 				}
 				case '-': {  
-					if (pri < 4) pos = i, pri = 4;
+					if (op_level < 4) {
+						pos = i;
+						op_level = 4;
+					}
 					break;
 				}
 				case '*': {  
-					if (pri < 3) pos = i, pri = 3;
+					if (op_level < 3) {
+						pos = i; 
+						op_level = 3;
+					}
 					break;
 				}
 				case '/': {  
-					if (pri < 3) pos = i, pri = 3;
+					if (op_level < 3) {
+						pos = i;
+						op_level = 3;
+					}
 					break;
 				}
 				case TK_NOT: {  
-					if (pri < 2) pos = i, pri = 2;
+					if (op_level < 2) {
+						pos = i; 
+						op_level = 2;
+					}
 					break;
 				}
 				case TK_EQ: {  
-					if (pri < 7) pos = i, pri = 7;
+					if (op_level < 7) {
+						pos = i; 
+						op_level = 7;
+					}
 					break;
 				}
 				case TK_NEQ: {  
-					if (pri < 7) pos = i, pri = 7;
+					if (op_level < 7) {
+						pos = i;
+						op_level = 7;
+					}
 					break;
 				}
 				case TK_AND: {  
-					if (pri < 11) pos = i, pri = 11;
+					if (op_level < 11) {
+						pos = i;
+						op_level = 11;
+					}
 					break;
 				}
 				case TK_OR: {  
-				if (pri < 12) pos = i, pri = 12;
+				if (op_level < 12) {
+					pos = i;
+					op_level = 12;
+				}
 				break;
 				}
 				case TK_SUB: {  
-					if (pri < 2) pos = i, pri = 2;
+					if (op_level < 2) {
+						pos = i;
+						op_level = 2;
+					}
 					break;
 				}
 				case TK_POINTER: {  
-					if (pri < 2) pos = i, pri = 2;
+					if (op_level < 2) {
+						pos = i;
+						op_level = 2;
+					}
 					break;
 				}
 				default: break;
 			}
 		}
 
-		if (pri == 0) {
+		if (op_level == 0) {
 			*flag = false; 
 			return 0;
 		}
-		if (pri == 2) {
-			pri = 0;
+		if (op_level == 2) {
+			op_level = 0;
 			for (i = p; i <= q; i++) {
 				if (tokens[i].type == '(') b_num++;
 				if (tokens[i].type == ')') b_num--;
 				if (b_num != 0) continue;
 				switch (tokens[i].type) {
 					case TK_SUB: {  
-						if (pri < 2) pos = i, pri = 2;
+						if (op_level < 2) {
+							pos = i;
+							op_level = 2;
+						}
 						break;
 					}
 					case TK_NOT: {  
-						if (pri < 2) pos = i, pri = 2;
+						if (op_level < 2) {
+							pos = i;
+							op_level = 2;
+						}
 						break;
 					}
 					case TK_POINTER: {  
-						if (pri < 2) pos = i, pri = 2;
+						if (op_level < 2) {
+							pos = i;
+							op_level = 2;
+						}
 						break;
 					}
 				}			
@@ -245,7 +287,7 @@ uint32_t eval(int p, int q) {
 				for (i = R_EAX; i <= R_EDI ; i ++) {
 					if (strcmp(tokens[p].str, regsl[i]) == 0) {
 						break;
-																																						}
+					}
 				}
 				if (i > R_EDI) {
 					if (strcmp(tokens[p].str, "eip") == 0){
