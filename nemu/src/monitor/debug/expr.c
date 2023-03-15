@@ -6,7 +6,7 @@
 #include <sys/types.h>
 #include <regex.h>
 
-bool* flag;
+// bool* flag; // I found Assert() showed in instruction doc, so change to Assert()
 
 enum {
   TK_NOTYPE = 256, TK_EQ, TK_NEQ, TK_NUMBER, TK_HEXNUMBER, TK_REGISTER, TK_AND, TK_OR, TK_NOT, TK_SUB, TK_POINTER,
@@ -115,18 +115,19 @@ static bool make_token(char *e) {
         break;
       }
     }
-
-    if (i == NR_REGEX) {
-      printf("Position not matched%d\n%s\n%*.s^\n", position, e, position, "");
-      return false;
-    }
+		// I found Assert() showed in instruction doc, so change to Assert()
+		Assert(!(i == NR_REGEX),"Position not matched%d\n%s\n%*.s^\n", position, e, position, "");
+    // if (i == NR_REGEX) { 
+      // printf("Position not matched%d\n%s\n%*.s^\n", position, e, position, "");
+      // return false;
+			
+    // }
   }
 
   return true;
 }
 
 int dominant_operator(int p, int q) {
-		if (*flag == false) return 0;
 		int i;
 		int pos = p;
 		int op_level = 0;
@@ -217,10 +218,11 @@ int dominant_operator(int p, int q) {
 			}
 		}
 
-		if (op_level == 0) {
-			*flag = false; 
-			return 0;
-		}
+		// if (op_level == 0) {
+		// 	*flag = false; 
+		// 	return 0;
+		// }
+		Assert(!(op_level == 0), "dominant_operator error!");
 		if (op_level == 2) {
 			op_level = 0;
 			for (i = p; i <= q; i++) {
@@ -268,11 +270,11 @@ bool check_bracket(int p, int q) {
 }
 
 uint32_t eval(int p, int q) {
-	if (*flag == false) return 0;
-	if (p > q) {
-		*flag = false;
-		return 0;
-	}
+	// if (p > q) {
+	// 	*flag = false;
+	// 	return 0;
+	// }
+	Assert(!(p > q), "eval error!");
 	if (p == q) {
 		uint32_t num = 0;
 		if (tokens[p].type == TK_NUMBER) {
@@ -294,8 +296,9 @@ uint32_t eval(int p, int q) {
 						num = cpu.eip;
 					}
 					else {
-						*flag = false; 
-						return 0;
+						// *flag = false; 
+						// return 0;
+						Assert(0, "eval error!");
 					}
 				} 
 				else return num = reg_l(i);
@@ -315,15 +318,20 @@ uint32_t eval(int p, int q) {
 					}
 				}
 				if (i <= R_BH) return num = reg_b(i);
-				*flag = false; 
-				return 0;
+				// *flag = false; 
+				// return 0;
+				Assert(0, "eval error!");
 			}
 			else {
-				*flag = false; 
-				return 0;
+				// *flag = false; 
+				// return 0;
+				Assert(0, "eval error!");
 			}
 		} 
-		else {*flag = false; return 0;}
+		else {
+			// *flag = false; return 0;
+			Assert(0, "eval error!");
+		}
 		return num;
 	}
 	uint32_t ans = 0;
@@ -337,8 +345,9 @@ uint32_t eval(int p, int q) {
 				case TK_NOT: return !q_ans;
 				case TK_SUB: return -q_ans;
 				default: {
-					*flag = false; 
-					return 0;
+					// *flag = false; 
+					// return 0;
+					Assert(0, "eval error!");
 				}
 			}
 		}
@@ -349,8 +358,9 @@ uint32_t eval(int p, int q) {
 			case '*': ans = p_ans * q_ans; break;
 			case '/': 
 				if (q_ans == 0) {
-					*flag = false; 
-					return 0;
+					// *flag = false; 
+					// return 0;
+					Assert(0, "eval error!");
 				}
 				else 
 					ans = p_ans / q_ans; 
@@ -360,8 +370,9 @@ uint32_t eval(int p, int q) {
 			case TK_AND: ans = p_ans && q_ans; break;
 			case TK_OR : ans = p_ans && q_ans; break;
 			default: {
-				*flag = false; 
-				return 0;
+				// *flag = false; 
+				// return 0;
+				Assert(0, "eval error!");
 			}
 		}
 	}
@@ -376,7 +387,7 @@ uint32_t expr(char *e, bool *success) {
     return 0;
   }
 	/* TODO: Insert codes to evaluate the expression. */
-  	flag = success;
+  // flag = success;
 	int i;
 	int brack = 0;
 	for (i = 0; i < nr_token ; i++) {
