@@ -57,7 +57,8 @@ static int cmd_info(char *args) {
 		printf ("eip\t0x%08x\n",cpu.eip);
 	}
 	else if (args[0] == 'w') {
-		// TODO:
+		// todo
+    print_w();
 	}
 	else { 
 		printf("Invalid Args!");

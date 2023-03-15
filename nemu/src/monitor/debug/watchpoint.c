@@ -36,3 +36,28 @@ WP* new_wp() {
 	}
 	return free_head;
 }
+
+void free_wp(WP *wp){
+	WP *f_head, *h;
+	f_head = free_;
+	h = head;
+	if (h == wp){
+		head = wp->next;
+	}
+	else{ // find wp
+		while (h != NULL && h->next != wp){
+			h = h->next;
+		}
+		h->next = h->next->next; // h->next is wp
+	}
+	// free wp
+	wp->next = free_;
+	free_ = wp;
+	wp->exprs[0] = '\0';
+	wp->val = 0;
+}
+
+//info w print
+void print_w(){
+	// todo
+}
