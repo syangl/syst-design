@@ -46,8 +46,7 @@ WP *new_wp()
 
 void free_wp(WP *wp)
 {
-	WP *f_head, *h;
-	f_head = free_;
+	WP *h;
 	h = head;
 	if (h == wp)
 	{
