@@ -292,8 +292,6 @@ uint32_t eval(int p, int q) {
 						num = cpu.eip;
 					}
 					else {
-						// *flag = false; 
-						// return 0;
 						Assert(0, "eval error!");
 					}
 				} 
