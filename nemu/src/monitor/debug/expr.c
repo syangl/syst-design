@@ -372,7 +372,6 @@ uint32_t expr(char *e, bool *success) {
     return 0;
   }
 	/* TODO: Insert codes to evaluate the expression. */
-  // flag = success;
 	int i;
 	int brack = 0;
 	for (i = 0; i < nr_token ; i++) {

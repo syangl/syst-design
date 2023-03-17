@@ -77,6 +77,17 @@ static int cmd_info(char *args)
   return 0;
 }
 
+static int cmd_p(char *args)
+{
+  Assert(!(args == NULL), "Needs a expr!");
+  uint32_t ans;
+  bool success;
+  ans = expr(args, &success);
+  Assert(success, "failure error!");
+  printf("answer: %d\n", ans);
+  return 0;
+}
+
 static int cmd_x(char *args)
 {
   if (args == NULL)
@@ -116,7 +127,8 @@ static int cmd_w(char *args)
   return 0;
 }
 
-static int cmd_d(char *args){
+static int cmd_d(char *args)
+{
   Assert(!(args == NULL), "Need more args!");
   int id;
   sscanf(args, "%d", &id);
@@ -141,6 +153,7 @@ static struct
     /* TODO: Add more commands */
     {"si", "Step into implementation of N instructions after the suspension of execution.When N is notgiven,the default is 1.", cmd_si},
     {"info", "r for print register state\nw for print watchpoint information", cmd_info},
+    {"p", "Calculate expressions", cmd_p},
     {"x", "Calculate the value of the expression and regard the result as the starting memory address.", cmd_x},
     {"w", "Add watchpoint", cmd_w},
     {"d", "Delete watchpoint", cmd_d},
