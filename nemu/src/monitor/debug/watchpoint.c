@@ -71,8 +71,10 @@ void free_wp(WP *wp)
 void print_w()
 {
 	WP *h = head;
-	while (h != NULL)
-	{
+	if (h == NULL){
+		printf("No watchpoint was set.\n");
+	}
+	while (h != NULL){
 		printf("[Watchpoint %d]\tExpr: %s\tValue: %d\n", h->NO, h->exprs, h->val);
 		h = h->next;
 	}
