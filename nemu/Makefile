@@ -52,3 +52,9 @@ gdb: $(BINARY)
 
 clean: 
 	rm -rf $(BUILD_DIR)
+
+# make count
+count:
+	find . -name "*[.h/.c]" | xargs wc -l
+cnt_nocomt:
+	find . -name "*[.h/.c]" | xargs grep "^." | wc -l
