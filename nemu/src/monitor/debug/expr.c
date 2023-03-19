@@ -93,26 +93,33 @@ static bool make_token(char *e) {
          * of tokens, some extra actions should be performed.
          */
 
-        switch (rules[i].token_type) {
-        	case TK_NOTYPE: break;
-			default: {
-				tokens[nr_token].type = rules[i].token_type;				
-				if (rules[i].token_type == TK_REGISTER) { // Register
-					char* reg_start = e + (position - substr_len) + 1;
-					strncpy(tokens[nr_token].str, reg_start, substr_len - 1);
-					int t;
-					for (t = 0; t <= strlen(tokens[nr_token].str); t++) { 
-						int x = tokens[nr_token].str[t];
-						if (x >= 'A' && x <= 'Z') x += ('a' - 'A');
-						tokens[nr_token].str[t] = (char)x;
+				switch (rules[i].token_type)
+				{
+				case TK_NOTYPE:
+					break;
+				default:
+				{
+					tokens[nr_token].type = rules[i].token_type;
+					if (rules[i].token_type == TK_REGISTER)
+					{ // Register
+						char *reg_start = e + (position - substr_len) + 1;
+						strncpy(tokens[nr_token].str, reg_start, substr_len - 1);
+						int t;
+						for (t = 0; t <= strlen(tokens[nr_token].str); t++)
+						{
+							int x = tokens[nr_token].str[t];
+							if (x >= 'A' && x <= 'Z')
+								x += ('a' - 'A');
+							tokens[nr_token].str[t] = (char)x;
+						}
 					}
-				} else
-					strncpy(tokens[nr_token].str, substr_start, substr_len);
-				tokens[nr_token].str[substr_len] = '\0';
-				++nr_token;
-			}
-		}
-        break;
+					else
+						strncpy(tokens[nr_token].str, substr_start, substr_len);
+					tokens[nr_token].str[substr_len] = '\0';
+					++nr_token;
+				}
+				}
+				break;
       }
     }
 		// I found Assert() showed in instruction doc, so change to Assert()
