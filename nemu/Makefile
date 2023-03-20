@@ -55,6 +55,6 @@ clean:
 
 # make count
 count:
-	find . -name "*[.h/.c]" | xargs wc -l
+	find . -wholename "*[.h/.c]" | xargs wc -l
 cnt_nocomt:
-	find . -name "*[.h/.c]" | xargs grep "^." | wc -l
+	find . -wholename "*[.h/.c]" | xargs grep "^." | wc -l

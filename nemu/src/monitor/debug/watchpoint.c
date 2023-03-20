@@ -71,10 +71,12 @@ void free_wp(WP *wp)
 void print_w()
 {
 	WP *h = head;
-	if (h == NULL){
+	if (h == NULL)
+	{
 		printf("No watchpoint was set.\n");
 	}
-	while (h != NULL){
+	while (h != NULL)
+	{
 		printf("[Watchpoint %d]\tExpr: %s\tValue: %d\n", h->NO, h->exprs, h->val);
 		h = h->next;
 	}
@@ -99,12 +101,15 @@ void check_wp(bool *check_flag)
 }
 
 // delete watchpoints
-WP *delete_wp(int id, bool *success){
+WP *delete_wp(int id, bool *success)
+{
 	WP *h = head;
-	while (h != NULL && h->NO != id){
+	while (h != NULL && h->NO != id)
+	{
 		h = h->next;
 	}
-	if (h == NULL){
+	if (h == NULL)
+	{
 		*success = false;
 	}
 	return h;
