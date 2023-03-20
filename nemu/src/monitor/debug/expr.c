@@ -17,7 +17,7 @@ enum
 	TK_AND,
 	TK_OR,
 	TK_NOT,
-	TK_SUB,
+	TK_MINUS_SIGN,
 	TK_POINTER,
 
 	/* TODO: Add more token types */
@@ -141,7 +141,7 @@ static bool make_token(char *e)
 			}
 		}
 		// I found Assert() showed in instruction doc, so change to Assert()
-		Assert(!(i == NR_REGEX), "Position not matched%d\n%s\n%*.s^\n", position, e, position, "");
+		Assert(!(i == NR_REGEX), "Position not matched %d\n%s\n%*.s^\n", position, e, position, "");
 	}
 
 	return true;
@@ -244,7 +244,7 @@ int dominant_operator(int p, int q)
 			}
 			break;
 		}
-		case TK_SUB:
+		case TK_MINUS_SIGN:
 		{
 			if (op_level < 2)
 			{
@@ -281,7 +281,7 @@ int dominant_operator(int p, int q)
 				continue;
 			switch (tokens[i].type)
 			{
-			case TK_SUB:
+			case TK_MINUS_SIGN:
 			{
 				if (op_level < 2)
 				{
@@ -413,7 +413,7 @@ uint32_t eval(int p, int q)
 	else
 	{
 		int pos = dominant_operator(p, q);
-		if (p == pos || tokens[pos].type == TK_NOT || tokens[pos].type == TK_SUB || tokens[pos].type == TK_POINTER)
+		if (p == pos || tokens[pos].type == TK_NOT || tokens[pos].type == TK_MINUS_SIGN || tokens[pos].type == TK_POINTER)
 		{
 			uint32_t q_ans = eval(pos + 1, q);
 			switch (tokens[pos].type)
@@ -422,7 +422,7 @@ uint32_t eval(int p, int q)
 				return vaddr_read(q_ans, 4);
 			case TK_NOT:
 				return !q_ans;
-			case TK_SUB:
+			case TK_MINUS_SIGN:
 				return -q_ans;
 			default:
 			{
@@ -495,7 +495,7 @@ uint32_t expr(char *e, bool *success)
 
 		if (tokens[i].type == '-' && (i == 0 || (tokens[i - 1].type != ')' && tokens[i - 1].type != TK_NUMBER && tokens[i - 1].type != TK_HEXNUMBER && tokens[i - 1].type != TK_REGISTER)))
 		{
-			tokens[i].type = TK_SUB;
+			tokens[i].type = TK_MINUS_SIGN;
 		}
 
 		if (tokens[i].type == '*' && (i == 0 || (tokens[i - 1].type != ')' && tokens[i - 1].type != TK_NUMBER && tokens[i - 1].type != TK_HEXNUMBER && tokens[i - 1].type != TK_REGISTER)))
