@@ -21,7 +21,15 @@ void rtl_setcc(rtlreg_t* dest, uint8_t subcode) {
     case CC_S:
     case CC_L:
     case CC_LE:
-      TODO();
+      // TODO();
+    case CC_NO:
+    case CC_NB:
+    case CC_NE:
+    case CC_NBE:
+    case CC_NS:
+    case CC_NP:
+    case CC_NL:
+    case CC_NLE:
     default: panic("should not reach here");
     case CC_P: panic("n86 does not have PF");
   }

@@ -23,9 +23,9 @@ static inline void set_width(int width) {
 /* Instruction Decode and EXecute */
 static inline void idex(vaddr_t *eip, opcode_entry *e) {
   /* eip is pointing to the byte next to opcode */
-  if (e->decode)
+  if (e->decode) // call decoding function(def by DHelper). it puts the info into global decoding table
     e->decode(eip);
-  e->execute(eip);
+  e->execute(eip); // after decoding, call exec func in opcode table to execute
 }
 
 static make_EHelper(2byte_esc);
@@ -212,11 +212,11 @@ static make_EHelper(2byte_esc) {
   idex(eip, &opcode_table[opcode]);
 }
 
-make_EHelper(real) {
-  uint32_t opcode = instr_fetch(eip, 1);
-  decoding.opcode = opcode;
-  set_width(opcode_table[opcode].width);
-  idex(eip, &opcode_table[opcode]);
+make_EHelper(real) { // define a helper related to exec phase
+  uint32_t opcode = instr_fetch(eip, 1); // get first byte of inst
+  decoding.opcode = opcode; // record in global decoding information table
+  set_width(opcode_table[opcode].width); // look up the opcode_table, get inst's width and record into global decoding information table 
+  idex(eip, &opcode_table[opcode]); // advanced decoding and execute
 }
 
 static inline void update_eip(void) {
@@ -230,10 +230,10 @@ void exec_wrapper(bool print_flag) {
 #endif
 
   decoding.seq_eip = cpu.eip;
-  exec_real(&decoding.seq_eip);
+  exec_real(&decoding.seq_eip); // execute
 
 #ifdef DEBUG
-  int instr_len = decoding.seq_eip - cpu.eip;
+  int instr_len = decoding.seq_eip - cpu.eip; // compute inst length
   sprintf(decoding.p, "%*.s", 50 - (12 + 3 * instr_len), "");
   strcat(decoding.asm_buf, decoding.assembly);
   Log_write("%s\n", decoding.asm_buf);
@@ -246,7 +246,7 @@ void exec_wrapper(bool print_flag) {
   uint32_t eip = cpu.eip;
 #endif
 
-  update_eip();
+  update_eip(); // update to next eip
 
 #ifdef DIFF_TEST
   void difftest_step(uint32_t);

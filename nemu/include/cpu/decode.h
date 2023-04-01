@@ -71,7 +71,7 @@ extern DecodeInfo decoding;
 #define id_src2 (&decoding.src2)
 #define id_dest (&decoding.dest)
 
-#define make_DHelper(name) void concat(decode_, name) (vaddr_t *eip)
+#define make_DHelper(name) void concat(decode_, name) (vaddr_t *eip) // further detached different DopHelper
 typedef void (*DHelper) (vaddr_t *);
 
 make_DHelper(I2E);

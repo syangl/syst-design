@@ -11,7 +11,7 @@ const rtlreg_t tzero = 0;
 /* Refer to Appendix A in i386 manual for the explanations of these abbreviations */
 
 /* Ib, Iv */
-static inline make_DopHelper(I) {
+static inline make_DopHelper(I) { // get and record operator info into struct op
   /* eip here is pointing to the immediate */
   op->type = OP_TYPE_IMM;
   op->imm = instr_fetch(eip, op->width);
@@ -38,7 +38,8 @@ static inline make_DopHelper(SI) {
    *
    op->simm = ???
    */
-  TODO();
+  // TODO();
+  op->simm = (int32_t)instr_fetch(eip, op->width);
 
   rtl_li(&op->val, op->simm);
 
