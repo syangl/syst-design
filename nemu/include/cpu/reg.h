@@ -35,15 +35,14 @@ typedef struct {
     struct
     {
       uint8_t CF : 1;
-      uint8_t DEF1 : 1;
-      uint8_t DEF2 : 4;
+      uint8_t X1 : 5; // X
       uint8_t ZF : 1;
       uint8_t SF : 1;
-      uint8_t DEF3 : 1;
+      uint8_t X2 : 1;
       uint8_t IF : 1;
-      uint8_t DEF4 : 1;
+      uint8_t X3 : 1;
       uint8_t OF : 1;
-      uint32_t DEF5 : 20;
+      uint32_t X4 : 20;
     } eflags;
     uint32_t flags;
   };
