@@ -42,8 +42,8 @@ static make_EHelper(name) { \
   /* 0x80, 0x81, 0x83 */ 
   // TODO:
 make_group(gp1,
-  EX(add), EX(or), EX(adc), EX(sbb),
-  EX(and), EX(sub), EX(xor), EX(cmp))
+  EX(add), EMPTY/*EX(or)*/, EX(adc), EX(sbb),
+  EMPTY/*EX(and)*/, EX(sub), EMPTY/*EX(xor)*/, EX(cmp))
 
   /* 0xc0, 0xc1, 0xd0, 0xd1, 0xd2, 0xd3 */
   // TODO: logic
@@ -54,7 +54,7 @@ make_group(gp2,
   /* 0xf6, 0xf7 */
   // TODO:
 make_group(gp3,
-    IDEX(test_I, test), EMPTY, EX(not), EX(neg),
+    EMPTY/*IDEX(test_I, test)*/, EMPTY, EMPTY/*EX(not)*/, EX(neg),
     EX(mul), EX(imul1), EX(div), EX(idiv))
 
   /* 0xfe */
