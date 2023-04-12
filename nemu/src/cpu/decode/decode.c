@@ -28,7 +28,7 @@ static inline make_DopHelper(I) { // get and record operator info into struct op
  */
 /* sign immediate */
 static inline make_DopHelper(SI) {
-  printf("in si\n");
+  // printf("in si\n");
   assert(op->width == 1 || op->width == 4);
 
   op->type = OP_TYPE_IMM;
@@ -40,12 +40,12 @@ static inline make_DopHelper(SI) {
    op->simm = ???
    */
   // TODO();
-  printf("in si1\n");
+  // printf("in si1\n");
   op->simm = instr_fetch(eip, op->width);
-  printf("in si2\n");
+  // printf("in si2\n");
   op->simm = ((op->simm << (8 * (4 - op->width))) >> (8 * (4 - op->width)));
   rtl_li(&op->val, op->simm);
-  printf("in si3\n");
+  // printf("in si3\n");
 
 #ifdef DEBUG
   snprintf(op->str, OP_STR_SIZE, "$0x%x", op->simm);
