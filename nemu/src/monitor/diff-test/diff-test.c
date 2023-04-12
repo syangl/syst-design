@@ -20,6 +20,14 @@ static bool is_skip_nemu;
 void diff_test_skip_qemu() { is_skip_qemu = true; }
 void diff_test_skip_nemu() { is_skip_nemu = true; }
 
+
+// diff reg test
+#define test_reg(reg)\
+  if (r.reg != cpu.reg){\
+    diff = true;\
+    Log("reg error NEMU.reg=0x%08x QEMU.reg=0x%08x\n", cpu.reg, r.reg);\
+  }
+
 #define regcpy_from_nemu(regs) \
   do { \
     regs.eax = cpu.eax; \
@@ -149,7 +157,16 @@ void difftest_step(uint32_t eip) {
 
   // TODO: Check the registers state with QEMU.
   // Set `diff` as `true` if they are not the same.
-  TODO();
+  // TODO();
+  test_reg(eax);
+  test_reg(ecx);
+  test_reg(edx);
+  test_reg(ebx);
+  test_reg(ebp);
+  test_reg(esp);
+  test_reg(edi);
+  test_reg(esi);
+  test_reg(eip);
 
   if (diff) {
     nemu_state = NEMU_END;
