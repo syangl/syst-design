@@ -5,7 +5,6 @@ void diff_test_skip_nemu();
 
 make_EHelper(lidt) {
   TODO();
-
   print_asm_template1(lidt);
 }
 

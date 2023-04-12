@@ -54,17 +54,30 @@ make_EHelper(popa) {
 }
 
 make_EHelper(leave) {
-  TODO();
-
+  // TODO();
+  rtl_mv(&cpu.esp, &cpu.ebp);
+  rtl_pop(&cpu.ebp);
   print_asm("leave");
 }
 
 make_EHelper(cltd) {
   if (decoding.is_operand_size_16) {
-    TODO();
+    // TODO();
+    if ((int16_t)(cpu.eax & 0xffff) < 0){
+      cpu.edx = 0xffff;
+    }
+    else {
+      cpu.edx = 0;
+    }
   }
   else {
-    TODO();
+    // TODO();
+    if ((int32_t)(cpu.eax)<0) {
+      cpu.edx=0xffffffff;
+    }
+    else {
+      cpu.edx=0;
+    }
   }
 
   print_asm(decoding.is_operand_size_16 ? "cwtl" : "cltd");
@@ -72,10 +85,16 @@ make_EHelper(cltd) {
 
 make_EHelper(cwtl) {
   if (decoding.is_operand_size_16) {
-    TODO();
+    // TODO();
+    rtl_lr_b(&t0, R_AX);
+    rtl_sext(&t0, &t0, 1);
+    rtl_sr_w(R_AX, &t0);
   }
   else {
-    TODO();
+    // TODO();
+    rtl_lr_w(&t0, R_AX);
+    rtl_sext(&t0, &t0, 2);
+    rtl_sr_l(R_EAX, &t0);
   }
 
   print_asm(decoding.is_operand_size_16 ? "cbtw" : "cwtl");
