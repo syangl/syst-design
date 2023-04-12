@@ -21,10 +21,10 @@ void diff_test_skip_qemu() { is_skip_qemu = true; }
 void diff_test_skip_nemu() { is_skip_nemu = true; }
 
 
-// diff reg test
+// diff test reg
 #define test_reg(reg)\
   if (r.reg != cpu.reg){\
-    diff = true;\
+    diff = true; \
     Log("reg error NEMU.reg=0x%08x QEMU.reg=0x%08x\n", cpu.reg, r.reg);\
   }
 
