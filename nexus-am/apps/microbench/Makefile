@@ -1,5 +1,4 @@
 NAME = microbench
-# SRCS = $(shell find -L ./src/ -name "*.c" -o -name "*.cpp")
 SRCS = $(shell find -L ./src/ -name "*.c" -o -name "*.cpp")
 INPUT ?= REF
 CFLAGS += -DSETTING_$(INPUT)

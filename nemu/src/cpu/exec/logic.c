@@ -84,3 +84,19 @@ make_EHelper(not) {
   operand_write(id_dest, &id_dest->val);
   print_asm_template1(not);
 }
+
+
+// found microbench needs rol, so implements it
+make_EHelper(rol) {
+   // rol times
+   for (t0=0; t0 < id_src->val; t0++) {
+     // get highest bit to shift, then shl, finally add highest to lowest postion
+     rtl_shri(&t1, &id_dest->val, id_dest->width*8-1);
+     rtl_shli(&t2, &id_dest->val, 1);
+     id_dest->val= t1 + t2;
+   }
+   rtl_set_CF(&t1);
+   operand_write(id_dest, &id_dest->val);
+   print_asm_template2(rol);
+}   
+
