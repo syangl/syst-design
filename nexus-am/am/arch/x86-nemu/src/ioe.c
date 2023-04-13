@@ -32,5 +32,9 @@ void _draw_sync() {
 }
 
 int _read_key() {
-  return _KEY_NONE;
+    uint32_t code = _KEY_NONE;
+    if (inb(0x64)) {// state judge
+      code = inl(0x60);// read 0x60 data port
+    }
+    return code;
 }
