@@ -38,6 +38,7 @@ void _halt(int code) {
   asm volatile(".byte 0xd6" : :"a"(code));
 
   // should not reach here
+  // printf("halt\n");
   while (1);
 }
 
