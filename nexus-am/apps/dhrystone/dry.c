@@ -840,8 +840,8 @@ int main ()
       Proc_2 (&Int_1_Loc);
 	/* Int_1_Loc == 5 */
 
-      if (Run_Index % 10000 == 0)
-        printf("for %d\n",Run_Index);
+      // if (Run_Index % 10000 == 0)
+      //   printf("for %d\n",Run_Index);
     
     } /* loop "for Run_Index" */
 
