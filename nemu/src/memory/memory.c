@@ -14,7 +14,7 @@ uint8_t pmem[PMEM_SIZE];
 uint32_t paddr_read(paddr_t addr, int len) {
   int mmio_id = is_mmio(addr);
   if (mmio_id != -1)
-    return mmio_read(addr， len， mmio_id);
+    return mmio_read(addr,  len,  mmio_id);
   else
     return pmem_rw(addr, uint32_t) & (~0u >> ((4 - len) << 3));
 }
@@ -22,7 +22,7 @@ uint32_t paddr_read(paddr_t addr, int len) {
 void paddr_write(paddr_t addr, int len, uint32_t data) {
   int mmio_id=is_mmio(addr);
   if (mmio_id != -1)
-    return mmio_write(addr， len， data， mmio_id);
+    return mmio_write(addr,  len,  data,  mmio_id);
   else
     memcpy(guest_to_host(addr), &data, len);
 }
