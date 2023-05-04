@@ -32,7 +32,7 @@ make_EHelper(mov_cr2r) {
 
 void raise_intr(uint8_t NO, vaddr_t ret_addr);
 make_EHelper(int) {
-  // TODO();
+  // TODO();F_
   raise_intr(id_dest->val, decoding.seq_eip);
 
   print_asm("int %s", id_dest->str);
@@ -43,7 +43,12 @@ make_EHelper(int) {
 }
 
 make_EHelper(iret) {
-  TODO();
+  // TODO();
+  rtl_pop(&decoding.jmp_eip);
+  decoding.is_jmp = 1;
+  rtl_pop(&t0);
+  cpu.cs = t0 & 0xffff;
+  rtl_pop(&cpu.flags);
 
   print_asm("iret");
 }
