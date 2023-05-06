@@ -1,25 +1,7 @@
 #include "common.h"
 #include "syscall.h"
 
-
-
-
-static inline uintptr_t sys_none(_RegSet *r) {
-  SYSCALL_ARG1(r) = 1;
-  return (uintptr_t)1;
-} 
-
-static inline uintptr_t sys_exit(_RegSet *r) {
-  _halt(SYSCALL_ARG2(r));
-  return (uintptr_t)1;
-}
-
-// static inline uintptr_t sys_write(uintptr_t fd, uintptr_t buf, uintptr_t len) {
-  
-// }
-
-
-
+#include "fs.h"
 
 _RegSet* do_syscall(_RegSet *r) {
   uintptr_t a[4];
@@ -30,12 +12,17 @@ _RegSet* do_syscall(_RegSet *r) {
 
   switch (a[0]) {
     case SYS_none:
-      sys_none(r);
+      SYSCALL_ARG1(r) = 1;
       break;
     case SYS_exit:
-      sys_exit(r);
+      _halt(SYSCALL_ARG2(r));
       break;
-    
+    case SYS_write:
+      SYSCALL_ARG1(r) = (int)fs_write(a[1], (void*)a[2], a[3]);//TODO: fs_write
+      break;
+    case SYS_brk:
+      SYSCALL_ARG1(r) = 0;
+      break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
 
