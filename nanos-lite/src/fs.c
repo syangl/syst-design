@@ -4,6 +4,7 @@ extern size_t ramdisk_read(void *buf, size_t offset, size_t len);
 extern size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 extern size_t dispinfo_read(void *buf, size_t offset, size_t len);
 extern size_t fb_write(const void *buf, size_t offset, size_t len);
+extern size_t events_read(void *buf, size_t len);
 size_t serial_write(const void *buf, size_t offset, size_t len);
 
 typedef struct {
@@ -46,8 +47,36 @@ int fs_open(const char *pathname, int flags, int mode){
 }
 
 ssize_t fs_read(int fd, void *buf, size_t len){
+  size_t fs_size = fs_filesz(fd);
+  switch (fd){
+    case FD_STDIN:
+    case FD_STDOUT: 
+    case FD_STDERR:
+    case FD_FB:
+      break;
+    case FD_EVENTS:
+      len = events_read(buf, len);
+      break;
+    case FD_DISPINFO:
+      if (file_table[fd].open_offset >= file_table[fd].size)
+        return 0;
+      if (file_table[fd].open_offset + len > fs_size)
+        len = file_table[fd].size - file_table[fd].open_offset;
+      dispinfo_read(buf, file_table[fd].open_offset, len);
+      file_table[fd].open_offset += len;
+      break;
+    default:
+      if (file_table[fd].open_offset >= fs_size)
+        return 0;
+      if (file_table[fd].open_offset + len > fs_size)
+        len = fs_size - file_table[fd].open_offset;
 
-  return 0;
+      ramdisk_read(buf, file_table[fd].disk_offset + file_table[fd].open_offset, len);
+      file_table[fd].open_offset += len;
+      break;
+  }
+
+  return len;
 }
 ssize_t fs_write(int fd, const void *buf, size_t len){
         Log("sys_write\n");
@@ -90,12 +119,12 @@ size_t fs_filesz(int fd){
 }
 
 off_t fs_lseek(int fd, off_t offset, int whence){
-return 0;
+  // TODO:
+  return 0;
 }
 
 int fs_close(int fd){
-
-return 0;
+  return 0;
 }
 
 
