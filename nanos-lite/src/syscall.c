@@ -18,19 +18,19 @@ _RegSet* do_syscall(_RegSet *r) {
       _halt(SYSCALL_ARG2(r));
       break;
     case SYS_write:
-      SYSCALL_ARG1(r) = (int)fs_write(a[1], (void*)a[2], a[3]);//TODO: fs_write
+      SYSCALL_ARG1(r) = fs_write(a[1], (void*)a[2], a[3]);//TODO: fs_write
       break;
     case SYS_brk:
       SYSCALL_ARG1(r) = 0;
       break;
     case SYS_open:
-      SYSCALL_ARG1(r) = (int)fs_open((char*)a[1], a[2], a[3]);//TODO:
+      SYSCALL_ARG1(r) = fs_open((char*)a[1], a[2], a[3]);//TODO:
       break;
     case SYS_close:
-      SYSCALL_ARG1(r) = (int)fs_close(a[1]);//TODO:
+      SYSCALL_ARG1(r) = fs_close(a[1]);//TODO:
       break;
     case SYS_read:
-      SYSCALL_ARG1(r) = (int)fs_read(a[1], (void*)a[2], a[3]);//TODO:
+      SYSCALL_ARG1(r) = fs_read(a[1], (void*)a[2], a[3]);//TODO:
       break;
     case SYS_lseek:
       SYSCALL_ARG1(r) = (int)fs_lseek(a[1], a[2], a[3]);//TODO:
