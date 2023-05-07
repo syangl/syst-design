@@ -18,6 +18,11 @@ void dispinfo_read(void *buf, off_t offset, size_t len) {
 }
 
 void fb_write(const void *buf, off_t offset, size_t len) {
+  int row, col;
+  offset /= 4;
+  col = offset % _screen.width;
+  row = offset / _screen.width;
+  _draw_rect((uint32_t *)buf, col, row, len / 4, 1);
 }
 
 void init_device() {
