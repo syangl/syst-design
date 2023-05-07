@@ -18,6 +18,7 @@ _RegSet* do_syscall(_RegSet *r) {
       _halt(SYSCALL_ARG2(r));
       break;
     case SYS_write:
+      Log("sys_write\n");
       SYSCALL_ARG1(r) = fs_write(a[1], (void*)a[2], a[3]);//TODO: fs_write
       break;
     case SYS_brk:
