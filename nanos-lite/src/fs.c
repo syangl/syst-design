@@ -17,12 +17,12 @@ enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB, FD_EVENTS, FD_DISPINFO, FD_NORMAL};
 
 /* This is the information about all files in disk. */
 static Finfo file_table[] __attribute__((used)) = {
-  {"stdin (note that this is not the actual stdin)", 0, 0},
-  {"stdout (note that this is not the actual stdout)", 0, 0},
-  {"stderr (note that this is not the actual stderr)", 0, 0},
-  [FD_FB] = {"/dev/fb", 0, 0},
-  [FD_EVENTS] = {"/dev/events", 0, 0},
-  [FD_DISPINFO] = {"/proc/dispinfo", 128, 0},
+  {"stdin (note that this is not the actual stdin)", 0, 0, 0},
+  {"stdout (note that this is not the actual stdout)", 0, 0, 0},
+  {"stderr (note that this is not the actual stderr)", 0, 0, 0},
+  [FD_FB] = {"/dev/fb", 0, 0, 0},
+  [FD_EVENTS] = {"/dev/events", 0, 0, 0},
+  [FD_DISPINFO] = {"/proc/dispinfo", 128, 0, 0},
 #include "files.h"
 };
 
@@ -50,6 +50,7 @@ ssize_t fs_read(int fd, void *buf, size_t len){
   return 0;
 }
 ssize_t fs_write(int fd, const void *buf, size_t len){
+        Log("sys_write\n");
   size_t fs_size = fs_filesz(fd);
   switch (fd){
     case FD_STDIN:
