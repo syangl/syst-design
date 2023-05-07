@@ -3,23 +3,22 @@
 
 #include "fs.h"
 
-size_t sys_write(int fd, const void *buf, size_t len){
-  //Log("SYS_write");
-  size_t byteswritten;
-  switch (fd){
-    case 1:
-    case 2:
-      byteswritten = 0;
-      while (len--){
-        _putc(((char *)buf)[byteswritten]);
-        byteswritten++;
-      }
-      return byteswritten;
-      break;
-    default:
-      return 0;
-  }
-}
+// size_t sys_write(int fd, const void *buf, size_t len){
+//   size_t byteswritten;
+//   switch (fd){
+//     case 1:
+//     case 2:
+//       byteswritten = 0;
+//       while (len--){
+//         _putc(((char *)buf)[byteswritten]);
+//         byteswritten++;
+//       }
+//       return byteswritten;
+//       break;
+//     default:
+//       return 0;
+//   }
+// }
 
 _RegSet* do_syscall(_RegSet *r) {
   uintptr_t a[4];
@@ -36,7 +35,7 @@ _RegSet* do_syscall(_RegSet *r) {
       _halt(SYSCALL_ARG2(r));
       break;
     case SYS_write:
-      SYSCALL_ARG1(r) = sys_write(a[1], (void*)a[2], a[3]); //fs_write(a[1], (void*)a[2], a[3]);
+      SYSCALL_ARG1(r) = fs_write(a[1], (void*)a[2], a[3]); //fs_write(a[1], (void*)a[2], a[3]);
       // printf("eax=%d",SYSCALL_ARG1(r));
       break;
     case SYS_brk:
