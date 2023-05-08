@@ -52,7 +52,7 @@ int fs_open(const char *pathname, int flags, int mode){
 ssize_t fs_read(int fd, void *buf, size_t len){
   size_t fs_size = fs_filesz(fd);
   switch (fd){
-    Log("fd=%d",fd);
+    Log("fd = %d",fd);
     case FD_STDIN:
     case FD_STDOUT: 
     case FD_STDERR:
