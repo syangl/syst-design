@@ -8,6 +8,9 @@ static const char *keyname[256] __attribute__((used)) = {
   _KEYS(NAME)
 };
 
+extern int _screen_width();
+extern int _screen_height();
+
 size_t events_read(void *buf, size_t len) {
   int key = _read_key();
   bool down = false;
@@ -36,8 +39,8 @@ void dispinfo_read(void *buf, off_t offset, size_t len) {
 void fb_write(const void *buf, off_t offset, size_t len) {
   int row, col;
   offset /= 4;
-  col = offset % _screen.width;
-  row = offset / _screen.width;
+  col = offset % _screen_width();
+  row = offset / _screen_width();
   _draw_rect((uint32_t *)buf, col, row, len / 4, 1);
 }
 
@@ -46,7 +49,7 @@ void init_device() {
 
   // TODO: print the string to array `dispinfo` with the format
   // described in the Navy-apps convention
-  sprintf(dispinfo, "Width:%d\tHeight:%d\n", _screen.width, _screen.height);
+  sprintf(dispinfo, "Width:%d\tHeight:%d\n", _screen_width(), _screen_height());
 }
 
 size_t serial_write(const void *buf, size_t offset, size_t len){

@@ -6,6 +6,8 @@ extern size_t dispinfo_read(void *buf, size_t offset, size_t len);
 extern size_t fb_write(const void *buf, size_t offset, size_t len);
 extern size_t events_read(void *buf, size_t len);
 extern size_t serial_write(const void *buf, size_t offset, size_t len);
+extern int _screen_width();
+extern int _screen_height();
 
 typedef struct {
   char *name;
@@ -31,7 +33,7 @@ static Finfo file_table[] __attribute__((used)) = {
 
 void init_fs() {
   // TODO: initialize the size of /dev/fb
-  file_table[FD_FB].size = _screen.width * _screen.height * 4;
+  file_table[FD_FB].size = _screen_width() * _screen_height() * 4;
 }
 
 int fs_open(const char *pathname, int flags, int mode){

@@ -43,3 +43,11 @@ int _read_key() {
     }
     return code;
 }
+
+int _screen_width(){
+  return _screen.width;
+}
+
+int _screen_height(){
+  return _screen.height;
+}
