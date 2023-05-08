@@ -59,7 +59,7 @@ ssize_t fs_read(int fd, void *buf, size_t len){
       break;
     case FD_EVENTS:
       len = events_read(buf, len);
-      break;
+      // break;
     case FD_DISPINFO:
       // Log("point");
       if (file_table[fd].open_offset >= file_table[fd].size)
