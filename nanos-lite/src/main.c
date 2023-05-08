@@ -31,7 +31,7 @@ int main() {
   init_fs();
 
   // uint32_t entry = loader(NULL, NULL);
-  uint32_t entry = loader(NULL, "/bin/text");
+  uint32_t entry = loader(NULL, "/share/games/pal/pal.tar.bz2");
   ((void (*)(void))entry)();
 
   panic("Should not reach here");

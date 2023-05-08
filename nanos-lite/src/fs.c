@@ -84,7 +84,6 @@ ssize_t fs_write(int fd, const void *buf, size_t len){
   switch (fd){
     case FD_STDIN:
       break;
-    case FD_NORMAL:
     case FD_STDOUT:
     case FD_STDERR:
       serial_write(buf, 0, len);

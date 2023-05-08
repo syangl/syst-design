@@ -18,7 +18,7 @@ size_t events_read(void *buf, size_t len) {
 
   if (key == _KEY_NONE){
     unsigned long t = _uptime();
-    sprintf(buf, "time %u\n", t);
+    sprintf(buf, "Time %u\n", t);
   }else{
     Log("key = %d\n", key);
     sprintf(buf, "%s %s\n", down ? "kd" : "ku", keyname[key]);
@@ -46,7 +46,7 @@ void init_device() {
 
   // TODO: print the string to array `dispinfo` with the format
   // described in the Navy-apps convention
-  sprintf(dispinfo, "WIDTH:%d\nHEIGHT:%d\n", _screen.width, _screen.height);
+  sprintf(dispinfo, "Width:%d\tHeight:%d\n", _screen.width, _screen.height);
 }
 
 size_t serial_write(const void *buf, size_t offset, size_t len){
