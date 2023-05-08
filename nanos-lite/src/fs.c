@@ -46,8 +46,7 @@ int fs_open(const char *pathname, int flags, int mode){
     }
   }
   // assert(0);
-  // return -1;
-  return 0;
+  return -1;
 }
 
 ssize_t fs_read(int fd, void *buf, size_t len){
