@@ -30,8 +30,8 @@ int main() {
 
   init_fs();
 
-  // uint32_t entry = loader(NULL, NULL);
-  uint32_t entry = loader(NULL, "/share/texts/num");
+  uint32_t entry = loader(NULL, NULL);
+  // uint32_t entry = loader(NULL, "/share/texts/num");
   ((void (*)(void))entry)();
 
   panic("Should not reach here");
