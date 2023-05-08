@@ -21,7 +21,7 @@ size_t events_read(void *buf, size_t len) {
 
   if (key == _KEY_NONE){
     unsigned long t = _uptime();
-    sprintf(buf, "Time %u\n", t);
+    sprintf(buf, "time %u\n", t);
   }else{
     Log("key = %d\n", key);
     sprintf(buf, "%s %s\n", down ? "kd" : "ku", keyname[key]);
