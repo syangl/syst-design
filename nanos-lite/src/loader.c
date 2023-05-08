@@ -17,7 +17,7 @@ uintptr_t loader(_Protect *as, const char *filename) {
   // Log("loader filename: %s", filename);
   int fd = fs_open(filename, 0, 0);
   fs_read(fd, (void *)DEFAULT_ENTRY, fs_filesz(fd));
-  Log("point");
+  // Log("point");
   fs_close(fd);
   return (uintptr_t)DEFAULT_ENTRY;
 }
