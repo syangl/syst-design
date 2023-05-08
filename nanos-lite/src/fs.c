@@ -5,7 +5,7 @@ extern size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 extern size_t dispinfo_read(void *buf, size_t offset, size_t len);
 extern size_t fb_write(const void *buf, size_t offset, size_t len);
 extern size_t events_read(void *buf, size_t len);
-size_t serial_write(const void *buf, size_t offset, size_t len);
+extern size_t serial_write(const void *buf, size_t offset, size_t len);
 
 typedef struct {
   char *name;
@@ -79,7 +79,7 @@ ssize_t fs_read(int fd, void *buf, size_t len){
   return len;
 }
 ssize_t fs_write(int fd, const void *buf, size_t len){
-        Log("sys_write\n");
+  // Log("fs_write\n");
   size_t fs_size = fs_filesz(fd);
   switch (fd){
     case FD_STDIN:
@@ -150,11 +150,3 @@ int fs_close(int fd){
 
 
 
-size_t serial_write(const void *buf, size_t offset, size_t len){
-  uintptr_t i = 0;
-  for (; len > 0; len--){
-    _putc(((char *)buf)[i]);
-    i++;
-  }
-  return i;
-}

@@ -49,3 +49,11 @@ void init_device() {
   sprintf(dispinfo, "WIDTH:%d\nHEIGHT:%d\n", _screen.width, _screen.height);
 }
 
+size_t serial_write(const void *buf, size_t offset, size_t len){
+  uintptr_t i = 0;
+  for (; len > 0; len--){
+    _putc(((char *)buf)[i]);
+    i++;
+  }
+  return i;
+}
