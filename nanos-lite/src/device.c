@@ -51,7 +51,7 @@ void init_device() {
   // Log("init_fs screen width: %d, screen height: %d", _screen_width(), _screen_height());
   // TODO: print the string to array `dispinfo` with the format
   // described in the Navy-apps convention
-  sprintf(dispinfo, "WIDTH:%d\tHEIGHT:%d\n", _screen_width(), _screen_height());
+  sprintf(dispinfo, "WIDTH:%d\nHEIGHT:%d\n", _screen_width(), _screen_height());
 }
 
 size_t serial_write(const void *buf, size_t offset, size_t len){
