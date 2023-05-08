@@ -45,13 +45,13 @@ int fs_open(const char *pathname, int flags, int mode){
       return i;
     }
   }
-  assert(0);
+  // assert(0);
   return -1;
 }
 
 ssize_t fs_read(int fd, void *buf, size_t len){
   size_t fs_size = fs_filesz(fd);
-  Log("fd = %d",fd);
+  // Log("fd = %d",fd);
   switch (fd){
     case FD_STDIN:
     case FD_STDOUT: 
@@ -60,7 +60,7 @@ ssize_t fs_read(int fd, void *buf, size_t len){
       break;
     case FD_EVENTS:
       len = events_read(buf, len);
-      Log("len = %u", len);
+      // Log("len = %u", len);
       break;
     case FD_DISPINFO:
       // Log("point");
