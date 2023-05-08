@@ -31,9 +31,9 @@ int main() {
   init_fs();
 
   // uint32_t entry = loader(NULL, NULL);
-  uint32_t entry = loader(NULL, "/bin/bmptest");
+  // uint32_t entry = loader(NULL, "/bin/bmptest");
   // uint32_t entry = loader(NULL, "/bin/events");
-  // uint32_t entry = loader(NULL, "/bin/pal");
+  uint32_t entry = loader(NULL, "/bin/pal");
   ((void (*)(void))entry)();
 
   panic("Should not reach here");
