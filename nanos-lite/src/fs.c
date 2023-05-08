@@ -60,6 +60,7 @@ ssize_t fs_read(int fd, void *buf, size_t len){
       break;
     case FD_EVENTS:
       len = events_read(buf, len);
+      Log("fd = %d",len);
       break;
     case FD_DISPINFO:
       // Log("point");
