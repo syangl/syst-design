@@ -37,12 +37,12 @@ _RegSet* do_syscall(_RegSet *r) {
       break;
     case SYS_write:
       SYSCALL_ARG1(r) = fs_write(a[1], (void*)a[2], a[3]); // sys_write(a[1], (void*)a[2], a[3]); 
-      // printf("eax=%d",SYSCALL_ARG1(r));
       break;
     case SYS_brk:
       SYSCALL_ARG1(r) = 0;
       break;
     case SYS_open:
+      Log("fs_open pathname: %s\n", (char*)a[1]);
       SYSCALL_ARG1(r) = fs_open((char*)a[1], a[2], a[3]);
       break;
     case SYS_close:
