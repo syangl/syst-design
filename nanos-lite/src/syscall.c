@@ -21,7 +21,7 @@ size_t sys_write(int fd, const void *buf, size_t len){
 }
 
 _RegSet* do_syscall(_RegSet *r) {
-  // Log("do_syscall\n");
+  // Log("step in do_syscall\n");
   uintptr_t a[4];
   a[0] = SYSCALL_ARG1(r);
   a[1] = SYSCALL_ARG2(r);
@@ -36,7 +36,7 @@ _RegSet* do_syscall(_RegSet *r) {
       _halt(SYSCALL_ARG2(r));
       break;
     case SYS_write:
-      SYSCALL_ARG1(r) = sys_write(a[1], (void*)a[2], a[3]); //fs_write(a[1], (void*)a[2], a[3]);
+      SYSCALL_ARG1(r) = fs_write(a[1], (void*)a[2], a[3]); // sys_write(a[1], (void*)a[2], a[3]); 
       // printf("eax=%d",SYSCALL_ARG1(r));
       break;
     case SYS_brk:
