@@ -34,8 +34,7 @@ static char dispinfo[128] __attribute__((used));
 
 void dispinfo_read(void *buf, off_t offset, size_t len) {
   strncpy(buf, dispinfo + offset, len);
-  Log("screen width: %d, screen height: %d", _screen_width(), _screen_height());
-  // Log("point2");
+  // Log("screen width: %d, screen height: %d", _screen_width(), _screen_height());
 }
 
 void fb_write(const void *buf, off_t offset, size_t len) {
