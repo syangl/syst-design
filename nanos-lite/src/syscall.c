@@ -21,7 +21,7 @@ size_t sys_write(int fd, const void *buf, size_t len){
 }
 
 _RegSet* do_syscall(_RegSet *r) {
-  Log("do_syscall\n");
+  // Log("do_syscall\n");
   uintptr_t a[4];
   a[0] = SYSCALL_ARG1(r);
   a[1] = SYSCALL_ARG2(r);
