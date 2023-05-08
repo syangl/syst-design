@@ -99,7 +99,7 @@ ssize_t fs_write(int fd, const void *buf, size_t len){
         return 0;
       if (file_table[fd].open_offset + len > fs_size)
         len = fs_size - file_table[fd].open_offset;
-      Log("point");
+      // Log("point");
       fb_write(buf, file_table[fd].open_offset, len);
       file_table[fd].open_offset += len;
       break;
