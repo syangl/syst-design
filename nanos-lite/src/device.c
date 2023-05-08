@@ -42,7 +42,7 @@ void fb_write(const void *buf, off_t offset, size_t len) {
   offset /= 4;
   col = offset % _screen_width();
   row = offset / _screen_width();
-  // Log("init_fs screen width: %d, screen height: %d", _screen_width(), _screen_height());
+  // Log("screen width: %d, screen height: %d", _screen_width(), _screen_height());
   _draw_rect((uint32_t *)buf, col, row, len / 4, 1);
 }
 
