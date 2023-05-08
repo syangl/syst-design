@@ -66,7 +66,7 @@ ssize_t fs_read(int fd, void *buf, size_t len){
         return 0;
       if (file_table[fd].open_offset + len > fs_size)
         len = file_table[fd].size - file_table[fd].open_offset;
-      
+        Log("point1");
       dispinfo_read(buf, file_table[fd].open_offset, len);
       file_table[fd].open_offset += len;
       break;
