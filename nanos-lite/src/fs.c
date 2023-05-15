@@ -132,7 +132,7 @@ off_t fs_lseek(int fd, off_t offset, int whence){
     case SEEK_SET:
       if (offset >= 0 && offset <= fs_filesz(fd)){
         file_table[fd].open_offset = offset;
-        result = file_table[fd].open_offset = offset;
+        result = file_table[fd].open_offset;
       }
       break;
     case SEEK_CUR:
