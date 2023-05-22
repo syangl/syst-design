@@ -10,6 +10,7 @@ extern ssize_t fs_write(int fd, const void *buf, size_t len);
 extern off_t fs_lseek(int fd, size_t offset, int whence);
 extern int fs_close(int fd);
 extern size_t fs_filesz(int fd);
+extern void* new_page(void);
 
 uintptr_t loader(_Protect *as, const char *filename) {
   // TODO();

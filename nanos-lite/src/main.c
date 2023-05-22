@@ -10,6 +10,7 @@ void init_device(void);
 void init_irq(void);
 void init_fs(void);
 uint32_t loader(_Protect *, const char *);
+extern void load_prog(const char *filename);
 
 int main() {
 #ifdef HAS_PTE
