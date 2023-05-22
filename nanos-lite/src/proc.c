@@ -34,16 +34,16 @@ _RegSet* schedule(_RegSet *prev) {
     current = &pcb[0];
   }
 
-  static int num = 0;
-  static const int frequency = 500;
+  static const int switch_max_times = 2000;
+  static int schedule_times = 0;
   if (current == &pcb[0]){
-    num++;
+    schedule_times++;
   }else{
     current = &pcb[0];
   }
-  if (num == frequency){
+  if (schedule_times == switch_max_times){
     current = &pcb[1];
-    num = 0;
+    schedule_times = 0;
   }
   // current = (current == &pcb[0]? &pcb[1] : &pcb[0]);
   _switch(&current->as);
