@@ -37,7 +37,7 @@ make_EHelper(mov_cr2r) {
       t0=cpu.cr0.val;
       rtl_sr(id_src->reg,4,&t0);
       break;
-    case 3:
+    case 2:
       t0=cpu.cr3.val;
       rtl_sr(id_src->reg,4,&t0);
       break;
