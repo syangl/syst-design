@@ -23,7 +23,7 @@ void load_prog(const char *filename) {
   stack.start = pcb[i].stack;
   stack.end = stack.start + sizeof(pcb[i].stack);
 
-  Log("_umake\n");
+  // Log("_umake\n");
   pcb[i].tf = _umake(&pcb[i].as, stack, stack, (void *)entry, NULL, NULL);
 }
 
