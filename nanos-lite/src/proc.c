@@ -28,11 +28,24 @@ void load_prog(const char *filename) {
 }
 
 _RegSet* schedule(_RegSet *prev) {
-  current->tf = prev;
-  
-  // current = &pcb[0];
-  // Log("schedule current\n");
-  current = (current == &pcb[0]? &pcb[1] : &pcb[0]);
-  _switch(&current -> as);
+  if (current != NULL){
+    current->tf = prev;
+  }else{
+    current = &pcb[0];
+  }
+
+  static int num = 0;
+  static const int frequency = 500;
+  if (current == &pcb[0]){
+    num++;
+  }else{
+    current = &pcb[0];
+  }
+  if (num == frequency){
+    current = &pcb[1];
+    num = 0;
+  }
+  // current = (current == &pcb[0]? &pcb[1] : &pcb[0]);
+  _switch(&current->as);
   return current->tf;
 }
