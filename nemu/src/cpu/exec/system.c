@@ -34,10 +34,12 @@ make_EHelper(mov_cr2r) {
   // TODO();
   switch (id_dest->reg){
     case 0:
-      id_src->val = cpu.cr0.val;
+      t0=cpu.cr0.val;
+      rtl_sr(id_src->reg,4,&t0);
       break;
     case 2:
-      id_src->val = cpu.cr3.val;
+      t0=cpu.cr3.val;
+      rtl_sr(id_src->reg,4,&t0);
       break;
     default:
       assert(0);
