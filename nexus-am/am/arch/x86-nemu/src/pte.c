@@ -66,9 +66,9 @@ void _switch(_Protect *p) {
 }
 
 void _map(_Protect *p, void *va, void *pa) {
-  if (OFF(va) || OFF(pa)){
-    return;
-  }
+  // if (OFF(va) || OFF(pa)){
+  //   return;
+  // }
 
   PDE *dir = (PDE *)p->ptr;
   PTE *table = NULL;
