@@ -20,14 +20,14 @@ uintptr_t loader(_Protect *as, const char *filename) {
 
   int fd = fs_open(filename, 0, 0);
   int size = fs_filesz(fd);
-  int ppnum = size / PGSIZE;
+  int page_nums = size / PGSIZE;
   if (size % PGSIZE != 0){
-    ppnum++;
+    page_nums++;
   }
 
   void *pa = NULL;
   void *va = DEFAULT_ENTRY;
-  for (int i = 0; i < ppnum; i++){
+  for (int i = 0; i < page_nums; i++){
     pa = new_page();
     _map(as, va, pa);
     fs_read(fd, pa, PGSIZE);

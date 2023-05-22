@@ -28,7 +28,6 @@ paddr_t page_translate(vaddr_t vaddr,bool is_write) {
     PDE *pgdirs = (PDE *)PTE_ADDR(crs.val);
     PDE pde = (PDE)paddr_read((uint32_t)(pgdirs + PDX(vaddr)), 4);
     PTE *ptable = (PTE *)PTE_ADDR(pde.val);
-
     PTE pte = (PTE)paddr_read((uint32_t)(ptable + PTX(vaddr)), 4);
 
     pde.accessed = 1;
