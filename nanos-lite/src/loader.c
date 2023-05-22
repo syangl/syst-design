@@ -29,9 +29,9 @@ uintptr_t loader(_Protect *as, const char *filename) {
   void *va = DEFAULT_ENTRY;
   for (int i = 0; i < ppnum; i++){
     pa = new_page();
-      Log("map: va %d => pa %d\n", va, pa);
+    Log("map: va %d => pa %d\n", va, pa);
     _map(as, va, pa);
-      Log("map: va %d => pa %d\n", va, pa);
+    Log("map: va %d => pa %d\n", va, pa);
     fs_read(fd, pa, PGSIZE);
     va += PGSIZE;
   }

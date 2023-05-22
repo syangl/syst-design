@@ -62,46 +62,37 @@ void paddr_write(paddr_t addr, int len, uint32_t data) {
     memcpy(guest_to_host(addr), &data, len);
 }
 
-uint32_t vaddr_read(vaddr_t addr, int len) {
-  if (cpu.cr0.paging){
-    if ((addr & 0xFFF) + len > 0x1000){
-      int len1, len2;
-      len1 = 0x1000 - (addr & 0xfff);
-      len2 = len - len1;
-      paddr_t addr1 = page_translate(addr, false);
-      uint32_t data1 = paddr_read(addr1, len1);
-      paddr_t addr2 = page_translate(addr + len1, false);
-      uint32_t data2 = paddr_read(addr2, len2);
-      uint32_t data = (data2 << (len1 << 3)) + data1;
-      return data;
-    }else{
-      paddr_t paddr = page_translate(addr, false);
-      return paddr_read(paddr, len);
-    }
+uint32_t vaddr_read(vaddr_t addr, int len){
+  if (PTE_ADDR(addr) != PTE_ADDR(addr + len - 1)){
+    int num1 = 0x1000 - OFF(addr);
+    int num2 = len - num1;
+    paddr_t paddr1 = page_translate(addr, false);
+    paddr_t paddr2 = page_translate(addr + num1, false);
+    uint32_t low = paddr_read(paddr1, num1);
+    uint32_t high = paddr_read(paddr2, num2);
+    uint32_t res = high << (num1 * 8) | low;
+    return res;
+  }else{
+    paddr_t paddr = page_translate(addr, false);
+    return paddr_read(paddr, len);
   }
-  else
-    return paddr_read(addr, len);
 }
 
-void vaddr_write(vaddr_t addr, int len, uint32_t data) {
-  if (cpu.cr0.paging){
-    if ((addr & 0xFFF) + len > 0x1000){
-      int len1, len2;
-      len1 = 0x1000 - (addr & 0xfff); 
-      len2 = len - len1;              
-      paddr_t addr1 = page_translate(addr, true); 
-      paddr_write(addr1, len1, data);             
-      uint32_t data1 = data >> (len1 << 3);
-      paddr_t addr2 = page_translate(addr + len1, true);
-      paddr_write(addr2, len2, data1);
+void vaddr_write(vaddr_t addr, int len, uint32_t data){
+  if (PTE_ADDR(addr) != PTE_ADDR(addr + len - 1)){
+    if (PTE_ADDR(addr) != PTE_ADDR(addr + len - 1)){
+      int num1 = 0x1000 - OFF(addr);
+      int num2 = len - num1;
+      paddr_t paddr1 = page_translate(addr, true);
+      paddr_t paddr2 = page_translate(addr + num1, true);
+      uint32_t low = data & (~0u >> ((4 - num1) << 3));
+      uint32_t high = data >> ((4 - num2) << 3);
+      paddr_write(paddr1, num1, low);
+      paddr_write(paddr2, num2, high);
+      return;
     }
-    else
-    {
-      paddr_t paddr = page_translate(addr, true);
-      return paddr_write(paddr, len, data);
-    }
+  }else{
+    paddr_t paddr = page_translate(addr, true);
+    paddr_write(paddr, len, data);
   }
-  else
-    return paddr_write(addr, len, data);
 }
-
