@@ -31,6 +31,6 @@ _RegSet* schedule(_RegSet *prev) {
   current->tf = prev;
   
   current = &pcb[0];
-  Log("schedule current\n");
+  // Log("schedule current\n");
   return current->tf;
 }
