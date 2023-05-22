@@ -14,10 +14,20 @@ extern size_t fs_filesz(int fd);
 uintptr_t loader(_Protect *as, const char *filename) {
   // TODO();
   // ramdisk_read(DEFAULT_ENTRY, 0, get_ramdisk_size());
-  // Log("loader filename: %s", filename);
-  int fd = fs_open(filename, 0, 0);
-  fs_read(fd, (void *)DEFAULT_ENTRY, fs_filesz(fd));
-  // Log("point");
-  fs_close(fd);
+
+  int index = fs_open(filename, 0, 0);
+  size_t length = fs_filesz(index);
+  void *va;
+  void *pa;
+  int page_count = length / 4096 + 1; 
+
+  for (int i = 0; i < page_count; i++){
+    va = DEFAULT_ENTRY + 4096 * i;
+    pa = new_page();
+    _map(as, va, pa);
+    fs_read(index, pa, 4096);
+  }
+
+  fs_close(index);
   return (uintptr_t)DEFAULT_ENTRY;
 }
