@@ -3,6 +3,8 @@
 
 #include "fs.h"
 
+extern int mm_brk(uint32_t new_brk);
+
 size_t sys_write(int fd, const void *buf, size_t len){
   size_t byteswritten;
   switch (fd){
@@ -39,7 +41,7 @@ _RegSet* do_syscall(_RegSet *r) {
       SYSCALL_ARG1(r) = fs_write(a[1], (void*)a[2], a[3]); // sys_write(a[1], (void*)a[2], a[3]); 
       break;
     case SYS_brk:
-      SYSCALL_ARG1(r) = 0;
+      SYSCALL_ARG1(r) = mm_brk(a[1]);
       break;
     case SYS_open:
       // Log("fs_open pathname: %s", (char*)a[1]);
