@@ -1,11 +1,15 @@
 #include "nemu.h"
 #include "device/mmio.h"
+// #include "x86.h"
 
 #define PMEM_SIZE (128 * 1024 * 1024)
 
+#define PTXSHFT   12      // Offset of PTX in a linear address
+#define PDXSHFT   22      // Offset of PDX in a linear address
 #define PTE_ADDR(pte) ((uint32_t)(pte) & ~0xfff)
-#define PDX(va) (((uint32_t)(va) >> 22) & 0x3ff)
-#define PTX(va) (((uint32_t)(va) >> 12) & 0x3ff)
+#define PDX(va)     (((uint32_t)(va) >> PDXSHFT) & 0x3ff)
+#define PTX(va)     (((uint32_t)(va) >> PTXSHFT) & 0x3ff)
+#define OFF(va)     ((uint32_t)(va) & 0xfff)
 
 #define pmem_rw(addr, type) *(type *)({\
     Assert(addr < PMEM_SIZE, "physical address(0x%08x) is out of bound", addr); \
@@ -32,7 +36,7 @@ paddr_t page_translate(vaddr_t vaddr,bool is_write) {
     if (is_write){
       pte.dirty = 1;
     }
-    paddr_t paddr = PTE_ADDR(pte.val) | ((uint32_t)(vaddr) & 0xfff);
+    paddr_t paddr = PTE_ADDR(pte.val) | OFF(vaddr);
     return paddr;
   }
 
