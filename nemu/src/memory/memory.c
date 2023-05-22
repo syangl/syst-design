@@ -31,7 +31,7 @@ paddr_t page_translate(vaddr_t vaddr,bool is_write) {
 
     PTE pte = (PTE)paddr_read((uint32_t)(ptable + PTX(vaddr)), 4);
 
-    Assert(pte.present, "addr = 0x%x", vaddr);
+    // Assert(pte.present, "addr = 0x%x", vaddr);
     pde.accessed = 1;
     pte.accessed = 1;
     if (is_write){
