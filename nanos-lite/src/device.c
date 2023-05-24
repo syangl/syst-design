@@ -10,6 +10,7 @@ static const char *keyname[256] __attribute__((used)) = {
 
 extern int _screen_width();
 extern int _screen_height();
+extern void switch_game();
 
 size_t events_read(void *buf, size_t len) {
   int key = _read_key();
@@ -17,6 +18,10 @@ size_t events_read(void *buf, size_t len) {
   if (key & 0x8000){
     key ^= 0x8000;
     down = true;
+  }
+
+  if (down && key == _KEY_F12){
+    switch_game();
   }
 
   if (key == _KEY_NONE){
