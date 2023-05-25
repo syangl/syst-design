@@ -31,11 +31,11 @@ int main() {
 
   init_fs();
 
-  // uint32_t entry = loader(NULL, NULL);
   // uint32_t entry = loader(NULL, "/bin/bmptest");
   // uint32_t entry = loader(NULL, "/bin/events");
   // uint32_t entry = loader(NULL, "/bin/pal");
   // ((void (*)(void))entry)();
+  
   // load_prog("/bin/dummy");
   load_prog("/bin/pal"); // 0
   load_prog("/bin/hello"); // 1
