@@ -72,7 +72,7 @@ FLOAT f2F(float a) {
   if (f.sign != 0){
     ret = -ret;
   }
-  assert(a != 0 && ret == 0)
+  assert(a != 0 && ret == 0);
   return ret;
 }
 
