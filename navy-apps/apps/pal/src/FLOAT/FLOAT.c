@@ -16,7 +16,7 @@ FLOAT F_div_F(FLOAT a, FLOAT b) {
   // assert(b != 0);
   FLOAT x = Fabs(a);
   FLOAT y = Fabs(b);
-  if (y == 0) y = 1;
+  // if (y == 0) y = 1;
   FLOAT ret = x / y;
  
   x = x % y;
@@ -46,7 +46,7 @@ FLOAT f2F(float a) {
    * performing arithmetic operations on it directly?
    */
   // Log("f2F\n");
-  printf("f2F\n");
+  // printf("f2F\n");
   // assert(0);
   union turn_float{
     struct {
@@ -76,7 +76,7 @@ FLOAT f2F(float a) {
   if (f.sign != 0){
     ret = -ret;
   }
-  assert(a != 0 && ret == 0);
+  printf("f2F ret=%x\n");
   return ret;
 }
 
