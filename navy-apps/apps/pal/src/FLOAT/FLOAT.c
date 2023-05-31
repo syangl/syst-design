@@ -13,7 +13,6 @@ FLOAT F_div_F(FLOAT a, FLOAT b) {
   assert(b != 0);
   FLOAT x = Fabs(a);
   FLOAT y = Fabs(b);
-  // if (y == 0) return 0x3f3f3f3f; 
   FLOAT ret = x / y;
  
   x = x % y;
