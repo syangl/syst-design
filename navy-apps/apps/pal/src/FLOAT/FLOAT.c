@@ -10,9 +10,10 @@ FLOAT F_mul_F(FLOAT a, FLOAT b) {
 
 FLOAT F_div_F(FLOAT a, FLOAT b) {
   // assert(0);
+  assert(b != 0);
   FLOAT x = Fabs(a);
   FLOAT y = Fabs(b);
-  if (y == 0) return INT32_MAX; 
+  // if (y == 0) return 0x3f3f3f3f; 
   FLOAT ret = x / y;
  
   x = x % y;
@@ -53,9 +54,9 @@ FLOAT f2F(float a) {
   };
 
   union turn_float f;
-  f.val = *((uint32_t*)((void*)&a));
+  f.val = *((uint32_t*)(void*)&a);
 
-  FLOAT ret;
+  FLOAT ret = 0;
 
   int exp = f.exp - 127;
   if (exp < 0){
@@ -71,7 +72,7 @@ FLOAT f2F(float a) {
   if (f.sign != 0){
     ret = -ret;
   }
-
+  assert(a != 0 && ret == 0)
   return ret;
 }
 
