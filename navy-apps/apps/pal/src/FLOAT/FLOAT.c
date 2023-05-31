@@ -10,7 +10,7 @@ FLOAT F_mul_F(FLOAT a, FLOAT b) {
 
 FLOAT F_div_F(FLOAT a, FLOAT b) {
   // assert(0);
-  Log("a=%x, b=%x",a,b);
+  assert(b != 0);
   FLOAT x = Fabs(a);
   FLOAT y = Fabs(b);
   FLOAT ret = x / y;
