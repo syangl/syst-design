@@ -58,14 +58,18 @@ FLOAT f2F(float a) {
   FLOAT ret;
 
   int exp = f.exp - 127;
-  if (exp - 7 >= 0){
-    ret = (f.mantissa | 0x100000) << (exp - 7);
+  if (exp < 0){
+    return 0;
   }else{
-    ret = (f.mantissa | 0x100000) >> (7 - exp);
+    if (exp - 7 >= 0){
+      ret = (f.mantissa | 0x100000) << (exp - 7);
+    }else{
+      ret = (f.mantissa | 0x100000) >> (7 - exp);
+    }
   }
 
   if (f.sign != 0){
-    ret = ret | 0x80000000;
+    ret = -ret;
   }
 
   return ret;
