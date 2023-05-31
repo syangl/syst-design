@@ -10,9 +10,9 @@ FLOAT F_mul_F(FLOAT a, FLOAT b) {
 
 FLOAT F_div_F(FLOAT a, FLOAT b) {
   // assert(0);
-  assert(b != 0);
   FLOAT x = Fabs(a);
   FLOAT y = Fabs(b);
+  if (y == 0) return INT32_MAX; 
   FLOAT ret = x / y;
  
   x = x % y;
