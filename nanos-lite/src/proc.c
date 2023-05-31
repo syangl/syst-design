@@ -39,7 +39,7 @@ _RegSet* schedule(_RegSet *prev) {
     current = &pcb[current_game];
   }
 
-  static const int switch_max_times = 2000;
+  static const int switch_max_times = 20000;
   static int schedule_times = 0;
   if (current == &pcb[current_game]){
     schedule_times++;
