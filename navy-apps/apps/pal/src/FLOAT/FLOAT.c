@@ -43,7 +43,7 @@ FLOAT f2F(float a) {
    * performing arithmetic operations on it directly?
    */
 
-  // assert(0);
+  assert(0);
   union turn_float{
     struct {
       uint32_t mantissa : 23;
