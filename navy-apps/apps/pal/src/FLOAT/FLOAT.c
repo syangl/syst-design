@@ -32,49 +32,49 @@ FLOAT F_div_F(FLOAT a, FLOAT b) {
   return ret;
 }
 
-// FLOAT f2F(float a) {
-//   /* You should figure out how to convert `a' into FLOAT without
-//    * introducing x87 floating point instructions. Else you can
-//    * not run this code in NEMU before implementing x87 floating
-//    * point instructions, which is contrary to our expectation.
-//    *
-//    * Hint: The bit representation of `a' is already on the
-//    * stack. How do you retrieve it to another variable without
-//    * performing arithmetic operations on it directly?
-//    */
+FLOAT f2F(float a) {
+  /* You should figure out how to convert `a' into FLOAT without
+   * introducing x87 floating point instructions. Else you can
+   * not run this code in NEMU before implementing x87 floating
+   * point instructions, which is contrary to our expectation.
+   *
+   * Hint: The bit representation of `a' is already on the
+   * stack. How do you retrieve it to another variable without
+   * performing arithmetic operations on it directly?
+   */
 
-//   // assert(0);
-//   union turn_float{
-//     struct {
-//       uint32_t mantissa : 23;
-//       uint32_t exp : 8;
-//       uint32_t sign : 1;
-//     };
-//     uint32_t val;
-//   };
+  // assert(0);
+  union turn_float{
+    struct {
+      uint32_t mantissa : 23;
+      uint32_t exp : 8;
+      uint32_t sign : 1;
+    };
+    uint32_t val;
+  };
 
-//   union turn_float f;
-//   f.val = *((uint32_t*)(void*)&a);
+  union turn_float f;
+  f.val = *((uint32_t*)(void*)&a);
 
-//   FLOAT ret = 0;
+  FLOAT ret = 0;
 
-//   int exp = f.exp - 127;
-//   if (exp < 0){
-//     return 0;
-//   }else{
-//     if (exp - 7 >= 0){
-//       ret = (f.mantissa | 0x800000) << (exp - 7);
-//     }else{
-//       ret = (f.mantissa | 0x800000) >> (7 - exp);
-//     }
-//   }
+  int exp = f.exp - 127;
+  if (exp < 0){
+    return 0;
+  }else{
+    if (exp - 7 >= 0){
+      ret = (f.mantissa | 0x800000) << (exp - 7);
+    }else{
+      ret = (f.mantissa | 0x800000) >> (7 - exp);
+    }
+  }
 
-//   if (f.sign != 0){
-//     ret = -ret;
-//   }
-//   // assert(a != 0 && ret == 0);
-//   return ret;
-// }
+  if (f.sign != 0){
+    ret = -ret;
+  }
+  // assert(a != 0 && ret == 0);
+  return ret;
+}
 
 FLOAT Fabs(FLOAT a) {
   // assert(0);
