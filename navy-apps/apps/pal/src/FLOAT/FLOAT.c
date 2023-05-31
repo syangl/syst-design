@@ -44,36 +44,36 @@ FLOAT f2F(float a) {
    */
 
   assert(0);
-  union turn_float{
-    struct {
-      uint32_t mantissa : 23;
-      uint32_t exp : 8;
-      uint32_t sign : 1;
-    };
-    uint32_t val;
-  };
+  // union turn_float{
+  //   struct {
+  //     uint32_t mantissa : 23;
+  //     uint32_t exp : 8;
+  //     uint32_t sign : 1;
+  //   };
+  //   uint32_t val;
+  // };
 
-  union turn_float f;
-  f.val = *((uint32_t*)(void*)&a);
+  // union turn_float f;
+  // f.val = *((uint32_t*)(void*)&a);
 
-  FLOAT ret = 0;
+  // FLOAT ret = 0;
 
-  int exp = f.exp - 127;
-  if (exp < 0){
-    return 0;
-  }else{
-    if (exp - 7 >= 0){
-      ret = (f.mantissa | (1 << 23)) << (exp - 7);
-    }else{
-      ret = (f.mantissa | (1 << 23)) >> (7 - exp);
-    }
-  }
+  // int exp = f.exp - 127;
+  // if (exp < 0){
+  //   return 0;
+  // }else{
+  //   if (exp - 7 >= 0){
+  //     ret = (f.mantissa | (1 << 23)) << (exp - 7);
+  //   }else{
+  //     ret = (f.mantissa | (1 << 23)) >> (7 - exp);
+  //   }
+  // }
 
-  if (f.sign != 0){
-    ret = -ret;
-  }
-  // assert(a != 0 && ret == 0);
-  return ret;
+  // if (f.sign != 0){
+  //   ret = -ret;
+  // }
+  // // assert(a != 0 && ret == 0);
+  // return ret;
 }
 
 FLOAT Fabs(FLOAT a) {
