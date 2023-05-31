@@ -47,7 +47,7 @@ FLOAT f2F(float a) {
    */
   // Log("f2F\n");
   printf("f2F\n");
-  assert(0);
+  // assert(0);
   union turn_float{
     struct {
       uint32_t mantissa : 23;
@@ -76,7 +76,7 @@ FLOAT f2F(float a) {
   if (f.sign != 0){
     ret = -ret;
   }
-  // assert(a != 0 && ret == 0);
+  assert(a != 0 && ret == 0);
   return ret;
 }
 
