@@ -6,7 +6,7 @@
 
 FLOAT F_mul_F(FLOAT a, FLOAT b) {
   // assert(0);
-  return ((int64_t)a * (int64_t)b) >> 16;
+  return (a * b) >> 16;
 }
 
 FLOAT Fabs(FLOAT a) {
@@ -20,7 +20,7 @@ FLOAT Fabs(FLOAT a) {
 FLOAT F_div_F(FLOAT a, FLOAT b) {
   // assert(0);
   // printf("FdivF a=%x, b=%x\n", a, b);
-  // assert(b != 0);
+  assert(b != 0);
   FLOAT x = Fabs(a);
   FLOAT y = Fabs(b);
   FLOAT ret = x / y;
