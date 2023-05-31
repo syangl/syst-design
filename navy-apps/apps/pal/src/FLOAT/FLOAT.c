@@ -48,37 +48,36 @@ FLOAT f2F(float a) {
   // Log("f2F\n");
   // printf("f2F\n");
   // assert(0);
-  union turn_float{
-    struct {
-      uint32_t mantissa : 23;
+  union float_ {
+    struct{
+      uint32_t man : 23;
       uint32_t exp : 8;
       uint32_t sign : 1;
     };
     uint32_t val;
   };
 
-  union turn_float f;
-  f.val = *((uint32_t*)(void*)&a);
+  union float_ f;
+  f.val = *((uint32_t *)(void *)&a);
+  int exp = f.exp - 127;
 
   FLOAT ret = 0;
 
-  int exp = f.exp - 127;
-  if (exp < 0){
+  if (exp == 128)
+    assert(0);
+  if (exp >= 0){
+    int mov = 7 - exp;
+    if (mov >= 0)
+      ret = (f.man | (1 << 23)) >> mov;
+    else
+      ret = (f.man | (1 << 23)) << (-mov);
+  }else
     return 0;
-  }else{
-    if (exp - 7 >= 0){
-      ret = (f.mantissa | (1 << 23)) << (exp - 7);
-    }else{
-      ret = (f.mantissa | (1 << 23)) >> (7 - exp);
-    }
-  }
-
-  if (f.sign != 0){
-    ret = -ret;
-  }
-  printf("f2F ret=%x\n");
-  return ret;
+  printf("f2F ret=%x\n", ret);
+  return f.sign == 0 ? ret : -ret;
 }
+
+
 
 FLOAT Fabs(FLOAT a) {
   // assert(0);
