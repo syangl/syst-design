@@ -7,17 +7,25 @@
 FLOAT F_mul_F(FLOAT a, FLOAT b) {
   // assert(0);
   
-  return (a * b) >> 16;
+  return ((uint64_t)a * (uint64_t)b) >> 16;
+}
+
+FLOAT Fabs(FLOAT a) {
+  // assert(0);
+  if ((a & 0x80000000) == 0)
+    return a;
+  else
+    return -a;
 }
 
 FLOAT F_div_F(FLOAT a, FLOAT b) {
   // assert(0);
   printf("FdivF a=%x, b=%x\n", a, b);
   // assert(b != 0);
+  FLOAT ret = Fabs(a) / Fabs(b);
   FLOAT x = Fabs(a);
   FLOAT y = Fabs(b);
   // if (y == 0) y = 1;
-  FLOAT ret = x / y;
  
   x = x % y;
   for (int i = 0; i < 16; i++){
@@ -48,44 +56,34 @@ FLOAT f2F(float a) {
   // Log("f2F\n");
   // printf("f2F\n");
   // assert(0);
-  union float_ {
-    struct{
-      uint32_t man : 23;
+  union turn_float{
+    struct {
+      uint32_t mantissa : 23;
       uint32_t exp : 8;
       uint32_t sign : 1;
     };
     uint32_t val;
   };
 
-  union float_ f;
-  f.val = *((uint32_t *)(void *)&a);
-  int exp = f.exp - 127;
+  union turn_float f;
+  f.val = *((uint32_t*)(void*)&a);
 
   FLOAT ret = 0;
 
-  if (exp == 128)
-    assert(0);
-  if (exp >= 0){
-    int mov = 7 - exp;
-    if (mov >= 0)
-      ret = (f.man | (1 << 23)) >> mov;
-    else
-      ret = (f.man | (1 << 23)) << (-mov);
-  }else
+  int exp = f.exp - 127;
+  if (exp < 0){
     return 0;
-  printf("f2F ret=%x\n", ret);
-  return f.sign == 0 ? ret : -ret;
+  }else{
+    if (exp - 7 > 0){
+      ret = (f.mantissa | (1 << 23)) << (exp - 7);
+    }else{
+      ret = (f.mantissa | (1 << 23)) >> (7 - exp);
+    }
+  }
+
+  return f.sign == 0 ? ret : (ret|(1<<31));
 }
 
-
-
-FLOAT Fabs(FLOAT a) {
-  // assert(0);
-  if ((a & 0x80000000) == 0)
-    return a;
-  else
-    return -a;
-}
 
 /* Functions below are already implemented */
 
