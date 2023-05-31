@@ -63,9 +63,9 @@ FLOAT f2F(float a) {
     return 0;
   }else{
     if (exp - 7 >= 0){
-      ret = (f.mantissa | 0x800000) << (exp - 7);
+      ret = (f.mantissa | (1 << 23)) << (exp - 7);
     }else{
-      ret = (f.mantissa | 0x800000) >> (7 - exp);
+      ret = (f.mantissa | (1 << 23)) >> (7 - exp);
     }
   }
 
