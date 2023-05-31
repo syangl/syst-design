@@ -20,12 +20,11 @@ FLOAT Fabs(FLOAT a) {
 
 FLOAT F_div_F(FLOAT a, FLOAT b) {
   // assert(0);
-  printf("FdivF a=%x, b=%x\n", a, b);
+  // printf("FdivF a=%x, b=%x\n", a, b);
   // assert(b != 0);
-  FLOAT ret = Fabs(a) / Fabs(b);
   FLOAT x = Fabs(a);
   FLOAT y = Fabs(b);
-  // if (y == 0) y = 1;
+  FLOAT ret = x / y;
  
   x = x % y;
   for (int i = 0; i < 16; i++){
