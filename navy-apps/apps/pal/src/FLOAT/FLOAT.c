@@ -1,6 +1,8 @@
 #include "FLOAT.h"
 #include <stdint.h>
+#include <stdio.h>
 #include <assert.h>
+
 
 FLOAT F_mul_F(FLOAT a, FLOAT b) {
   // assert(0);
@@ -10,6 +12,7 @@ FLOAT F_mul_F(FLOAT a, FLOAT b) {
 
 FLOAT F_div_F(FLOAT a, FLOAT b) {
   // assert(0);
+  printf("FdivF a=%x, b=%x\n", a, b);
   assert(b != 0);
   FLOAT x = Fabs(a);
   FLOAT y = Fabs(b);
@@ -41,7 +44,7 @@ FLOAT f2F(float a) {
    * stack. How do you retrieve it to another variable without
    * performing arithmetic operations on it directly?
    */
-
+  Log("f2F\n");
   assert(0);
   // union turn_float{
   //   struct {
