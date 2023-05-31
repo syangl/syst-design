@@ -383,9 +383,7 @@ PAL_UpdateTimeChargingUnit(
    else
    {
       g_Battle.flTimeChargingUnit /= 1.2f;
-      printf("enter\n");
       g_Battle.flTimeChargingUnit = F_div_F(g_Battle.flTimeChargingUnit, f2F(1.2));
-      printf("ret\n");
    }
 }
 
