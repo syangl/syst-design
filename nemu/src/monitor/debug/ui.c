@@ -7,6 +7,12 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+/** 
+ * note: 
+ * 用 readline 读取输入的命令之后，用 strtok()分解第一个字符串（以空格分开），然后与cmd_table[]中的 name 比较，执行对应的函数。
+*/
+
+
 void cpu_exec(uint64_t);
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
@@ -43,13 +49,13 @@ static int cmd_q(char *args)
 
 static int cmd_help(char *args);
 
-static int cmd_si(char *args)
+static int cmd_si(char *args) // 单步执行num步
 {
   int num = 0;
   if (args == NULL)
     num = 1;
   else
-    sscanf(args, "%d", &num);
+    sscanf(args, "%d", &num); 
   cpu_exec(num);
   return 0;
 }
@@ -57,7 +63,7 @@ static int cmd_si(char *args)
 static int cmd_info(char *args)
 {
   int i;
-  if (args[0] == 'r')
+  if (args[0] == 'r') // 输入info r 打印寄存器状态
   {
     for (i = R_EAX; i <= R_EDI; i++)
     {
@@ -65,7 +71,7 @@ static int cmd_info(char *args)
     }
     printf("eip\t0x%08x\n", cpu.eip);
   }
-  else if (args[0] == 'w')
+  else if (args[0] == 'w') // 输入 info w 打印监视点信息
   {
     print_w();
   }
@@ -88,19 +94,19 @@ static int cmd_p(char *args)
   return 0;
 }
 
-static int cmd_x(char *args)
+static int cmd_x(char *args) // 扫描内存，格式为x N EXPR，求出表达式EXPR的值, 将结果作为起始内存地址, 以十六进制形式输出连续的N个4字节.
 {
   if (args == NULL)
   {
     printf("Invalid Args!\n");
     return 0;
   }
-  char *tokens = strtok(args, " ");
+  char *tokens = strtok(args, " "); // 分割 "N EXPR"
   int N, exprs;
   sscanf(tokens, "%d", &N);
-  char *eps = tokens + strlen(tokens) + 1;
+  char *eps = tokens + strlen(tokens) + 1;  // 获取"EXPR"
   bool flag = true;
-  exprs = expr(eps, &flag);
+  exprs = expr(eps, &flag); // 返回EXPR表示的值
   if (!flag)
   {
     printf("Invalid !\n");
@@ -108,21 +114,21 @@ static int cmd_x(char *args)
   }
   for (int i = 0; i < N; i++)
   {
-    printf("0x%08x\t0x%08x\n", exprs + i * 4, vaddr_read(exprs + i * 4, 4));
+    printf("0x%08x\t0x%08x\n", exprs + i * 4, vaddr_read(exprs + i * 4, 4)); // 格式控制 %08x 表示输出8个16进制表示的字符
   }
   return 0;
 }
 
-static int cmd_w(char *args)
+static int cmd_w(char *args) // 命令格式 w EXPR ，创建一个监视点。（当表达式EXPR的值发生变化时, 暂停程序执行）
 {
   Assert(!(args == NULL), "Need more args!");
   bool flag = true;
-  uint32_t val = expr(args, &flag);
+  uint32_t val = expr(args, &flag); // 输入表达式求值
   Assert(flag, "Need more args!");
-  WP *wp = new_wp();
+  WP *wp = new_wp(); // 创建一个监视点
   Assert(!(wp == NULL), "No free space to add watchpoints!");
   strcpy(wp->exprs, args);
-  wp->val = val;
+  wp->val = val; // 记录当前表达式和它的值
   printf("Succefully add watchpoint %d\n", wp->NO);
   return 0;
 }
@@ -190,6 +196,7 @@ static int cmd_help(char *args)
   return 0;
 }
 
+// main函数
 void ui_mainloop(int is_batch_mode)
 {
   if (is_batch_mode)

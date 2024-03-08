@@ -23,8 +23,8 @@ static Finfo file_table[] __attribute__((used)) = {
   {"stdin (note that this is not the actual stdin)", 0, 0, 0},
   {"stdout (note that this is not the actual stdout)", 0, 0, 0},
   {"stderr (note that this is not the actual stderr)", 0, 0, 0},
-  [FD_FB] = {"/dev/fb", 0, 0, 0},
-  [FD_EVENTS] = {"/dev/events", 0, 0, 0},
+  [FD_FB] = {"/dev/fb", 0, 0, 0}, // 显卡内存，用来存储要处理的图形信息，抽象成文件/dev/fb
+  [FD_EVENTS] = {"/dev/events", 0, 0, 0}, // 输入事件也抽象成文件，存在/dev/events中。需要实现两种事件：按键事件和时钟事件，优先处理按键事件。
   [FD_DISPINFO] = {"/proc/dispinfo", 128, 0, 0},
 #include "files.h"
 };
@@ -33,25 +33,21 @@ static Finfo file_table[] __attribute__((used)) = {
 
 void init_fs() {
   // TODO: initialize the size of /dev/fb
-  // Log("init_fs screen width: %d, screen height: %d", _screen_width(), _screen_height());
-  file_table[FD_FB].size = _screen_width() * _screen_height() * 4;
+  file_table[FD_FB].size = _screen_width() * _screen_height() * 4; // init_fs对显存/dev/fb大小初始化，通过getScreen函数获得屏幕宽高，并计算出屏幕大小，每个像素是4字节。
 }
 
 int fs_open(const char *pathname, int flags, int mode){
-  for (int i = 0; i < NR_FILES; i++){
-    // Log("file_table name: %s, pathname: %s", file_table[i].name, pathname);   
+  for (int i = 0; i < NR_FILES; i++){  
     if (strcmp(file_table[i].name, pathname) == 0){
       file_table[i].open_offset = 0;
       return i;
     }
   }
-  // assert(0);
   return -1;
 }
 
 ssize_t fs_read(int fd, void *buf, size_t len){
   size_t fs_size = fs_filesz(fd);
-  // Log("fd = %d",fd);
   switch (fd){
     case FD_STDIN:
     case FD_STDOUT: 
@@ -60,17 +56,13 @@ ssize_t fs_read(int fd, void *buf, size_t len){
       break;
     case FD_EVENTS:
       len = events_read(buf, len);
-      // Log("len = %u", len);
       break;
     case FD_DISPINFO:
-      // Log("point");
       if (file_table[fd].open_offset >= file_table[fd].size)
         return 0;
       if (file_table[fd].open_offset + len > fs_size)
         len = file_table[fd].size - file_table[fd].open_offset;
-      // Log("point1");
       dispinfo_read(buf, file_table[fd].open_offset, len);
-      // Log("buf : %s", (char*)buf);
       file_table[fd].open_offset += len;
       break;
     default:
@@ -87,7 +79,6 @@ ssize_t fs_read(int fd, void *buf, size_t len){
   return len;
 }
 ssize_t fs_write(int fd, const void *buf, size_t len){
-  // Log("fs_write\n");
   size_t fs_size = fs_filesz(fd);
   switch (fd){
     case FD_STDIN:
@@ -101,8 +92,7 @@ ssize_t fs_write(int fd, const void *buf, size_t len){
         return 0;
       if (file_table[fd].open_offset + len > fs_size)
         len = fs_size - file_table[fd].open_offset;
-      // Log("point");
-      fb_write(buf, file_table[fd].open_offset, len);
+      fb_write(buf, file_table[fd].open_offset, len); 
       file_table[fd].open_offset += len;
       break;
     case FD_EVENTS:

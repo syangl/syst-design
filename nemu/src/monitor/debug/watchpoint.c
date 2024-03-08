@@ -3,6 +3,8 @@
 
 #define NR_WP 32
 
+// note： 监视器功能实现
+
 static WP wp_pool[NR_WP];
 static WP *head, *free_;
 
@@ -27,8 +29,8 @@ WP *new_wp()
 	if (free_ == NULL)
 		return NULL;
 	WP *free_head, *head_tail;
-	free_head = free_; // get one free node
-	head_tail = head;  // head_tail is the first in used nodes
+	free_head = free_; // get one free node（获取一个空闲node）
+	head_tail = head;  // head_tail is the first in used nodes（已使用node的头）
 	free_ = free_->next;
 	free_head->next = NULL;
 	if (head_tail == NULL)
@@ -39,7 +41,7 @@ WP *new_wp()
 		{
 			head_tail = head_tail->next;
 		}
-		head_tail->next = free_head; // link free_head on used nodes linklist as tail
+		head_tail->next = free_head; // link free_head on used nodes linklist as tail（把刚分配的node链入已使用链表尾部）
 	}
 	return free_head;
 }

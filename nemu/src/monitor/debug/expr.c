@@ -3,6 +3,11 @@
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
+
+/** note：
+ * 从键盘上读入命令后（涉及到str表达式分析实现）, NEMU需要解析该命令——利用框架代码调用单步执行——打印寄存器——扫描内存
+*/
+
 #include <sys/types.h>
 #include <regex.h>
 
@@ -58,6 +63,7 @@ static regex_t re[NR_REGEX];
 /* Rules are used for many times.
  * Therefore we compile them only once before any usage.
  */
+
 void init_regex()
 {
 	int i;
@@ -66,7 +72,7 @@ void init_regex()
 
 	for (i = 0; i < NR_REGEX; i++)
 	{
-		ret = regcomp(&re[i], rules[i].regex, REG_EXTENDED);
+		ret = regcomp(&re[i], rules[i].regex, REG_EXTENDED); // 这个函数把指定的正则表达式pattern编译成一种特定的数据格式compiled，这样可以使匹配更有效。
 		if (ret != 0)
 		{
 			regerror(ret, &re[i], error_msg, 128);
@@ -84,19 +90,20 @@ typedef struct token
 Token tokens[32];
 int nr_token;
 
-static bool make_token(char *e)
+static bool make_token(char *e) // 把expr中的token保存在tokens数组中
 {
 	int position = 0;
 	int i;
 	regmatch_t pmatch;
 
-	nr_token = 0;
+	nr_token = 0; // token数量
 
 	while (e[position] != '\0')
 	{
-		/* Try all rules one by one. */
+		/* 逐个匹配所有的rules */
 		for (i = 0; i < NR_REGEX; i++)
 		{
+			// 用regexec匹配目标文本串，pmatch.rm_so==0表示匹配串在目标串中的第一个位置。pmatch.rm_eo表示结束位置，position和substr_len表示读取完后的位置和读取长度。
 			if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0)
 			{
 				char *substr_start = e + position;
@@ -104,14 +111,14 @@ static bool make_token(char *e)
 
 				Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
 						i, rules[i].regex, position, substr_len, substr_len, substr_start);
-				position += substr_len;
+				position += substr_len; // 后推到下一个位置
 
 				/* TODO: Now a new token is recognized with rules[i]. Add codes
          * to record the token in the array `tokens'. For certain types
          * of tokens, some extra actions should be performed.
          */
 
-				switch (rules[i].token_type)
+				switch (rules[i].token_type) // 得到了一个token，判断type
 				{
 				case TK_NOTYPE:
 					break;
@@ -127,7 +134,7 @@ static bool make_token(char *e)
 						{
 							int x = tokens[nr_token].str[t];
 							if (x >= 'A' && x <= 'Z')
-								x += ('a' - 'A');
+								x += ('a' - 'A'); // lower大写转小写
 							tokens[nr_token].str[t] = (char)x;
 						}
 					}
@@ -147,11 +154,19 @@ static bool make_token(char *e)
 	return true;
 }
 
-int dominant_operator(int p, int q)
+int dominant_operator(int p, int q) // 找到并返回结合运算符的位置。
 {
+	/**
+	 * 按照指导书所说，根据结合性, 最后被结合的运算符才是dominant operator.一个例子是1+2+3, 它的dominant operator 应该是右边的+. 
+	 * 关键在于，最后一步的运算符优先级应该最低。因此，实现时，从右往左扫描表达式，并且设置优先级，遇到')'括号时要一直扫描到'('出现位置，没有括号就从右边第一个开始.
+	 * 举例说明实现，表达式2*8+5，规定加减法的优先级是4，乘除法的优先级是3，维护一个初始优先级op_level，初值为0，从右往左第一次扫描到加法符号，
+	 * 比较当前优先级op_level，如果当前值小于4（因为当前是加法，比较值为4），则pos 为加号的位置，优先级更新为4，
+	 * 接下来继续扫描，遇到了乘法，优先级更高，值更小，因为op_level==4 > 3，不更新level 和pos，最后结合的位置仍然是+处，对应2*8+5 最后一步运算是+ 而不是*。
+	 * 只要通过switch 语句列出各优先级运算符的情况即可。
+	*/
 	int i;
 	int pos = p;
-	int op_level = 0;
+	int op_level = 0; // 越小越优先
 	int b_num = 0;
 	for (i = q; i >= p; i--)
 	{
@@ -161,6 +176,7 @@ int dominant_operator(int p, int q)
 			b_num--;
 		if (b_num != 0)
 			continue;
+		
 		switch (tokens[i].type)
 		{
 		case '+':
@@ -314,7 +330,7 @@ int dominant_operator(int p, int q)
 	return pos;
 }
 
-bool check_bracket(int p, int q)
+bool check_bracket(int p, int q) // 检查左右括号匹配，p开始位置，q结束位置
 {
 	if (tokens[p].type != '(' || tokens[q].type != ')')
 		return false;
@@ -325,7 +341,7 @@ bool check_bracket(int p, int q)
 			b_num++;
 		if (tokens[i].type == ')')
 			b_num--;
-		if (b_num == 0 && i != q)
+		if (b_num == 0 && i != q) // 没到结束位置，失败
 			return false;
 	}
 	if (b_num == 0)
@@ -333,7 +349,7 @@ bool check_bracket(int p, int q)
 	return false;
 }
 
-uint32_t eval(int p, int q)
+uint32_t eval(int p, int q) // 转换字符串表达式为对应的数值或寄存器号
 {
 	Assert(!(p > q), "eval error!");
 	if (p == q)
@@ -371,7 +387,7 @@ uint32_t eval(int p, int q)
 					}
 				}
 				else
-					return num = reg_l(i);
+					return num = reg_l(i); // 返回寄存器号
 			}
 			else if (strlen(tokens[p].str) == 2)
 			{
@@ -409,13 +425,13 @@ uint32_t eval(int p, int q)
 	}
 	uint32_t ans = 0;
 	if (check_bracket(p, q))
-		return eval(p + 1, q - 1);
+		return eval(p + 1, q - 1); // 含括号的递归计算表达式
 	else
 	{
-		int pos = dominant_operator(p, q);
+		int pos = dominant_operator(p, q); // 找到表达式的最后结合点
 		if (p == pos || tokens[pos].type == TK_NOT || tokens[pos].type == TK_MINUS_SIGN || tokens[pos].type == TK_POINTER)
 		{
-			uint32_t q_ans = eval(pos + 1, q);
+			uint32_t q_ans = eval(pos + 1, q); // ！ -  *右侧的子表达式转换
 			switch (tokens[pos].type)
 			{
 			case TK_POINTER:
@@ -430,7 +446,7 @@ uint32_t eval(int p, int q)
 			}
 			}
 		}
-		uint32_t p_ans = eval(p, pos - 1), q_ans = eval(pos + 1, q);
+		uint32_t p_ans = eval(p, pos - 1), q_ans = eval(pos + 1, q); // 转换双目运算符左右两侧子表达式
 		switch (tokens[pos].type)
 		{
 		case '+':
@@ -468,10 +484,10 @@ uint32_t eval(int p, int q)
 		}
 		}
 	}
-	return ans;
+	return ans; // 返回表达式计算结果
 }
 
-uint32_t expr(char *e, bool *success)
+uint32_t expr(char *e, bool *success) // 检查表达式合法性并转换字符串表达式为值
 {
 	if (!make_token(e))
 	{
@@ -483,6 +499,7 @@ uint32_t expr(char *e, bool *success)
 	int brack = 0;
 	for (i = 0; i < nr_token; i++)
 	{
+		// 括号匹配检查
 		if (tokens[i].type == '(')
 			brack++;
 		if (tokens[i].type == ')')
@@ -493,11 +510,13 @@ uint32_t expr(char *e, bool *success)
 			return 0;
 		}
 
+		// 判断并修改‘-’是负号而不是减号。满足if条件说明是负号
 		if (tokens[i].type == '-' && (i == 0 || (tokens[i - 1].type != ')' && tokens[i - 1].type != TK_NUMBER && tokens[i - 1].type != TK_HEXNUMBER && tokens[i - 1].type != TK_REGISTER)))
 		{
 			tokens[i].type = TK_MINUS_SIGN;
 		}
 
+		// 判断并修改‘*’是指针符号而不是乘号
 		if (tokens[i].type == '*' && (i == 0 || (tokens[i - 1].type != ')' && tokens[i - 1].type != TK_NUMBER && tokens[i - 1].type != TK_HEXNUMBER && tokens[i - 1].type != TK_REGISTER)))
 		{
 			tokens[i].type = TK_POINTER;

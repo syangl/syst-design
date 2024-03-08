@@ -1,6 +1,11 @@
 #include "cpu/exec.h"
 #include "all-instr.h"
 
+/**
+ * note：执行函数，exec_wrapper是模拟器译码执行的入口，opcode索引全局译码表，表中是执行函数的入口，查表调用实现的各种指令功能执行函数make_EHelper即exe_{name}，
+ * decode_{name}是译码分析的辅助函数，已给出不用实现
+*/
+
 extern void raise_intr(uint8_t NO, vaddr_t ret_addr);
 
 typedef struct {
@@ -234,7 +239,7 @@ static inline void update_eip(void) {
   cpu.eip = (decoding.is_jmp ? (decoding.is_jmp = 0, decoding.jmp_eip) : decoding.seq_eip);
 }
 
-void exec_wrapper(bool print_flag) {
+void exec_wrapper(bool print_flag) { // note：
 #ifdef DEBUG
   decoding.p = decoding.asm_buf;
   decoding.p += sprintf(decoding.p, "%8x:   ", cpu.eip);

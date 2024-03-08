@@ -6,7 +6,7 @@
 #define PMEM_SIZE (128 * 1024 * 1024)
 #define PGSIZE    4096    // Bytes mapped by a page
 
-struct _RegSet {
+struct _RegSet { // tarpframe结构体，用于保存在异常或irq出现后保存用户空间上下文
   // uintptr_t esi, ebx, eax, eip, edx, error_code, eflags, ecx, cs, esp, edi, ebp;
   // int       irq;
   uintptr_t edi, esi, ebp, esp, ebx, edx, ecx, eax;

@@ -3,12 +3,46 @@
 
 #include "nemu.h"
 
+/**
+ * note：
+ * RTL基本指令：
+ *    可使用这些操作将复杂指令分解成更简单的操作。
+ *    NEMU 中的 RTL 寄存器：
+ *      x86的八个通用寄存器(在 include/cpu/reg.h 中定义)
+ *      id_src, id_src2 和 id_dest 中的访存地址 addr 和操作数内容 val (在 include/cpu/decode.h 中定义). 从概念上看, 它们分别与MAR和MDR有异曲同工之妙
+ *      临时寄存器 t0~t3 和 at (在 src/cpu/decode/decode.c 中定义)
+ * 
+ * 再回顾一遍模拟器最核心的执行逻辑，应用程序执行的指令被模拟器译码分析，调用执行函数，执行函数通过RTL实现，这样运行在真机上的模拟器完成了相应的指令功能。
+ * 
+ * asm volatile用法：
+ *    语法格式：asm volatile (assembly code : output operands : input operands : clobbered registers);
+ *             assembly code: 包含实际汇编指令的字符串。
+ *             output operands: 指定输出的操作数，即汇编代码的结果将写入这些变量。
+ *             input operands: 指定输入的操作数，即嵌入汇编代码所需的输入数据。
+ *             clobbered registers: 指定在嵌入的汇编代码中被修改的寄存器。
+ *    举个例子：
+ *    --------------------------------------------------------------------------------------
+ *    |  int main() {                                                                      |
+ *    |    int input = 10;                                                                 | 
+ *    |    int result;                                                                     | 
+ *    |    asm volatile (                                                                  |
+ *    |      "movl %1, %0;" // 将输入值复制到输出值（从左往右，%0、%1对应后面的=r和r）         |  
+ *    |      : "=r" (result) // 输出操作数，'r'表示通用寄存器，'='表示输出，没有'='表示输入     |
+ *    |      : "r" (input)   // 输入操作数                                                  |
+ *    |    );                                                                              |
+ *    |                                                                                    | 
+ *    |    printf("Result: %d\n", result); // result是10                                   |     
+ *    |    return 0;                                                                       | 
+ *    |  }                                                                                 | 
+ *    --------------------------------------------------------------------------------------
+*/
+
 extern rtlreg_t t0, t1, t2, t3;
 extern const rtlreg_t tzero;
 
 /* RTL basic instructions */
 
-static inline void rtl_li(rtlreg_t* dest, uint32_t imm) {
+static inline void rtl_li(rtlreg_t* dest, uint32_t imm) { // 立即数读入
   *dest = imm;
 }
 
@@ -23,6 +57,7 @@ static inline void rtl_li(rtlreg_t* dest, uint32_t imm) {
 #define c_slt(a, b) ((int32_t)(a) < (int32_t)(b))
 #define c_sltu(a, b) ((a) < (b))
 
+// concat宏，函数名称是rtl_{name} ,对src1和src2进行c_{name}的逻辑运算，结果存入dest
 #define make_rtl_arith_logic(name) \
   static inline void concat(rtl_, name) (rtlreg_t* dest, const rtlreg_t* src1, const rtlreg_t* src2) { \
     *dest = concat(c_, name) (*src1, *src2); \
@@ -44,7 +79,9 @@ make_rtl_arith_logic(slt)
 make_rtl_arith_logic(sltu)
 
 static inline void rtl_mul(rtlreg_t* dest_hi, rtlreg_t* dest_lo, const rtlreg_t* src1, const rtlreg_t* src2) {
-  asm volatile("mul %3" : "=d"(*dest_hi), "=a"(*dest_lo) : "a"(*src1), "r"(*src2));
+  // 执行乘法操作，将输入操作数 *src1 和 *src2 相乘，并将结果的高位和低位分别存储在 *dest_hi 和 *dest_lo 所指向的内存位置。
+  // 需要注意的是，mul 指令将两个操作数相乘的结果存储在edx:eax 寄存器对中，其中 edx 包含结果的高位，而 eax 包含结果的低位。
+  asm volatile("mul %3" : "=d"(*dest_hi), "=a"(*dest_lo) : "a"(*src1), "r"(*src2)); // d是edx，a是eax
 }
 
 static inline void rtl_imul(rtlreg_t* dest_hi, rtlreg_t* dest_lo, const rtlreg_t* src1, const rtlreg_t* src2) {
@@ -111,6 +148,7 @@ static inline void rtl_sr(int r, int width, const rtlreg_t* src1) {
   }
 }
 
+// 置位和获取eflags值
 #define make_rtl_setget_eflags(f) \
   static inline void concat(rtl_set_, f) (const rtlreg_t* src) { \
     /*TODO();*/cpu.eflags.f = (*src); \
@@ -192,19 +230,19 @@ static inline void rtl_neq0(rtlreg_t* dest, const rtlreg_t* src1) {
 static inline void rtl_msb(rtlreg_t* dest, const rtlreg_t* src1, int width) {
   // dest <- src1[width * 8 - 1]
   // TODO();
-  *dest = (uint32_t)*src1 >> (width * 8 - 1);
+  *dest = (uint32_t)*src1 >> (width * 8 - 1); // 如32位，逻辑右移31位得到最高有效位
 }
 
 static inline void rtl_update_ZF(const rtlreg_t* result, int width) {
   // eflags.ZF <- is_zero(result[width * 8 - 1 .. 0])
   // TODO();
-  cpu.eflags.ZF = ((*result & (0xFFFFFFFF >> ((4 - width) * 8))) == 0);
+  cpu.eflags.ZF = ((*result & (0xFFFFFFFF >> ((4 - width) * 8))) == 0); // 右移4-w位得到和w位宽相同的全1掩码，和result与运算得到w宽的结果，判断其是否为0
 }
 
 static inline void rtl_update_SF(const rtlreg_t* result, int width) {
   // eflags.SF <- is_sign(result[width * 8 - 1 .. 0])
   // TODO();
-  cpu.eflags.SF = (((*result & (0xFFFFFFFF >> ((4 - width) * 8))) & (1 << (width * 8 - 1))) != 0);
+  cpu.eflags.SF = (((*result & (0xFFFFFFFF >> ((4 - width) * 8))) & (1 << (width * 8 - 1))) != 0); // 获取result[width*8-1...0]的符号位并置位（最高位）
 }
 
 static inline void rtl_update_ZFSF(const rtlreg_t* result, int width) {

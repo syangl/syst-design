@@ -21,16 +21,16 @@ uintptr_t loader(_Protect *as, const char *filename) {
   int fd = fs_open(filename, 0, 0);
   int size = fs_filesz(fd);
   int page_nums = size / PGSIZE;
-  if (size % PGSIZE != 0){
+  if (size % PGSIZE != 0){ // 最后一页通过取余来计数
     page_nums++;
   }
 
   void *pa = NULL;
   void *va = DEFAULT_ENTRY;
   for (int i = 0; i < page_nums; i++){
-    pa = new_page();
-    _map(as, va, pa);
-    fs_read(fd, pa, PGSIZE);
+    pa = new_page(); 
+    _map(as, va, pa); // 直接调用map实现va和pa的映射
+    fs_read(fd, pa, PGSIZE); // pa就是fs_read的buf，读取disk到buf
     va += PGSIZE;
   }
   fs_close(fd);

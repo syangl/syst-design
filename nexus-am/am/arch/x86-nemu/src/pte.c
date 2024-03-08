@@ -95,6 +95,7 @@ _RegSet *_umake(_Protect *p, _Area ustack, _Area kstack, void *entry, char *cons
   memcpy((void *)ustack.end - 12, (void *)arg1, 4);
   memcpy((void *)ustack.end - 16, (void *)arg1, 4);
 
+  // 创建进程上下文
   _RegSet tf;
   tf.eflags = 0x02 | FL_IF;
   tf.cs = 8;
